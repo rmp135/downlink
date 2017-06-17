@@ -26,7 +26,7 @@
   }
 </style>
 <script>
-  import { mapMutations, mapState } from 'vuex'
+  import { mapMutations, mapState, mapActions } from 'vuex'
   import ProgramBar from '~components/program-bar'
   import WindowFrame from '~components/window-frame'
 
@@ -36,13 +36,19 @@
         ['windows']
       )
     },
+    mounted () {
+      this.$store.dispatch('localhost/createFile')
+    },
     methods: {
       onMouseMove (e) {
-        this.updateMouse(e)
+        if (e.which === 1) {
+          this.updateMouse(e)
+        }
       },
       ...mapMutations('global', {
         updateMouse: 'UPDATE_MOUSE'
-      }),
+      },
+      ...mapActions('localhost', ['createFile']))
     },
     components: {
       ProgramBar,

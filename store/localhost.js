@@ -1,55 +1,23 @@
 import Vue from 'vue'
+import Guid from '~/helpers/guid.js'
 
 export const state = {
-  processes: [
-    {
-      id: 1,
-      name: 'something',
-      percent: 100
-    }
-  ],
+  processes: [ ],
   disks: [
     {
       name: 'DISK1',
       capacity: 10,
-      files: [
-        {
-          position:1,
-          size: 2,
-          name: 'other',
-          percent: 60
-        },
-        {
-          position: 3,
-          size: 4,
-          name: 'something',
-          percent: 100
-        }
-      ]
+      files: [ ]
     },
     {
       name: 'DISK2',
       capacity: 20,
-      files: [
-        {
-          position: 2,
-          size: 14,
-          name: 'something',
-          percent: 100
-        }
-      ]
+      files: [ ]
     },
     {
       name: 'DISK3',
       capacity: 5,
-      files: [
-        {
-          position: 0,
-          size: 1,
-          name: 'something',
-          percent: 40
-        }
-      ]
+      files: [ ]
     },
   ],
   programs: [
@@ -80,23 +48,39 @@ export const getters = {
   topProcID (state) {
     if (state.processes.length === 0) return 1
     return state.processes.slice().sort((p1, p2) => p2.id - p1.id)[0].id
+  },
+  percentProcesses (state, getters) {
+    var total = state.processes.map(p => p.priority).reduce(((p1, p2) => p1 + p2), 0)
+    return state.processes.map(p => {
+      return {
+        ...p,
+        percent: Math.floor(p.priority / total * 100)
+      }
+    })
+  },
+  allFiles (state) {
+    return state.disks.map(d => d.files).reduce((f1, f2) => f1.concat(f2))
   }
 }
 
 export const actions = {
-  async copyFile ({ state, commit, dispatch }, { disk, file }) {
+  createFile ({ state, commit }) {
+    const disk = state.disks[0]
+    const file = {
+      position: 0,
+      size: 3,
+      percent: 100,
+      name: 'test'
+    }
+    commit('CREATE_FILE', { disk, file })
+  },
+  deleteFile ({ dispatch }, file) {
+    dispatch('addProcess', { name: 'file-delete', metadata: { file: file.guid }})
+  },
+  copyFile ({ state, commit, dispatch }, { fromFile, to: { disk, file } }) {
     file.percent = 0
     commit('CREATE_FILE', { disk, file })
-    const process = await dispatch('addProcess', { name: 'copy-file' })
-    function proc () {
-      file.percent = file.percent + 1
-      if (file.percent < 100) {
-        setTimeout(proc.bind(this), 10 / 100 * process.percent)
-      } else {
-        commit('REMOVE_PROCESS', process)
-      }
-    }
-    proc.call(this)
+    dispatch('addProcess', { name: 'file-copy', metadata: { from: fromFile.guid, to: file.guid }})
   },
   addProcess ({ state, commit, getters }, process) {
     process.id = getters.topProcID + 1
@@ -110,6 +94,7 @@ export const mutations = {
     disk.files.splice(disk.files.indexOf(file), 1)
   },
   CREATE_FILE (state, { file, disk }) {
+    file.guid = Guid()
     disk.files.push(file)
   },
   UPDATE_FILE (state, { file, newFile }) {
@@ -121,12 +106,17 @@ export const mutations = {
     state.disks.splice(diskIndex, 0, disk)
   },
   ADD_PROCESS (state, process) {
-    process.percent = Math.floor(100 / (state.processes.length + 1))
-    state.processes.forEach(p => p.percent = Math.floor(p.percent / 100 * (100 - process.percent)))
+    process.priority = 1
     state.processes.push(process)
   },
   REMOVE_PROCESS (state, process) {
-    state.processes.splice(state.processes.indexOf(process), 1)
-    state.processes.forEach(p => p.percent = Math.floor(p.percent / 100))
+    const procIndex = state.processes.find(p => p.id === process.id)
+    if (procIndex != undefined) {
+      state.processes.splice(procIndex, 1)
+    }
+  },
+  UPDATE_PROCESS_PRIORITY (state, { id, amount }) {
+    const process = state.processes.find(p => p.id === id)
+    process.priority = Math.max(process.priority + amount, 0)
   }
 }

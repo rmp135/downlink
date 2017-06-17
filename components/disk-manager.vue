@@ -66,7 +66,7 @@
   }
 </style>
 <script>
-  import { mapState, mapMutations, mapActions } from 'vuex'
+  import { mapState, mapMutations, mapActions, mapGetters } from 'vuex'
   import cloneDeep from 'lodash/cloneDeep'
   
   export default {
@@ -77,9 +77,48 @@
       }
     },
     computed: {
-      ...mapState('localhost', ['disks'])
+      ...mapState('localhost', ['disks']),
+      ...mapGetters('localhost', ['allFiles', 'percentProcesses'])
+    },
+    mounted () {
+      setInterval(this.process, 100)
     },
     methods: {
+      process () {
+        let toRemove = []
+        for (let process of this.percentProcesses) {
+          switch (process.name) {
+            case 'file-copy': {
+              const file = this.allFiles.find(f => f.guid === process.metadata.to)
+              if (file === undefined  || file.percent === 100 || !this.allFiles.find(f => f.guid === process.metadata.from)) {
+                toRemove.push(process)
+                break
+              }
+              this.updateFile({ file, newFile: { ...file, percent: Math.min(file.percent += 5 * process.percent / 100, 100) } })
+              break
+            }
+            case 'file-delete': {
+              const file = this.allFiles.find(f => f.guid === process.metadata.file)
+              if (file === undefined || file.percent <= 0) {
+                toRemove.push(process)
+                if (file.percent <= 0) {
+                  this.commitDeleteFile({ disk: this.disks.find(d => d.files.includes(file)) , file })
+                  if (this.selectedFile == file) {
+                    this.selectedDisk = null
+                    this.selectedFile = null
+                  }
+                }
+                break
+              }
+              this.updateFile({ file, newFile: { ...file, percent: file.percent -= 10 * process.percent / 100 } })
+              break
+            }
+          }
+        }
+        for (let process of toRemove) {
+          this.removeProcess(process)
+        }
+      },
       gapsInDisk (disk) {
         const newFiles = disk.files.slice()
         newFiles.push({ position: 0, size: 0, placeholder: true })
@@ -99,12 +138,15 @@
       canHoldFile (file, disk) {
         return this.gapsInDisk(disk).some(f => f.size >= file.size)
       },
+      canMoveFile (file) {
+        return file.percent === 100
+      },
       canMoveUp (file, diskIndex) {
-        if (diskIndex === 0) return false
+        if (diskIndex === 0 || !this.canMoveFile(file)) return false
         return this.canHoldFile(file, this.disks[diskIndex-1])
       },
       canMoveDown (file, diskIndex) {
-        if (diskIndex === this.disks.length - 1) return false
+        if (diskIndex === this.disks.length - 1 || !this.canMoveFile(file)) return false
         return this.canHoldFile(file, this.disks[diskIndex+1])
       },
       async copyDown (file, diskIndex) {
@@ -112,14 +154,14 @@
         const gaps = this.gapsInDisk(this.disks[diskIndex + 1])
         const newFile = cloneDeep(file)
         newFile.position = gaps.find(g => g.size >= file.size).position
-        this.copyFile({ disk: this.disks[diskIndex + 1], file: newFile })
+        this.copyFile({ fromFile: file, to: { disk: this.disks[diskIndex + 1], file: newFile }})
       },
       copyUp (file, diskIndex) {
         if (!this.canMoveUp(file, diskIndex)) return
         const gaps = this.gapsInDisk(this.disks[diskIndex - 1])
         const newFile = cloneDeep(file)
         newFile.position = gaps.find(g => g.size >= file.size).position
-        this.copyFile({ disk: this.disks[diskIndex - 1], file: newFile })
+        this.copyFile({ fromFile: file, to: { disk: this.disks[diskIndex - 1], file: newFile }})
       },
       selectFile (file, disk) {
         if (file === this.selectedFile) {
@@ -131,16 +173,15 @@
         this.selectedDisk = disk
       },
       onFileDeleteClick (file, disk) {
-        this.deleteFile({ file, disk })
-        this.selectedDisk = null
-        this.selectedFile = null
+        this.deleteFile(file)
       },
-      ...mapActions('localhost', ['copyFile']),
+      ...mapActions('localhost', ['copyFile', 'deleteFile']),
       ...mapMutations('localhost', {
-        deleteFile: 'DELETE_FILE',
         createFile: 'CREATE_FILE',
         moveDisk: 'MOVE_DISK',
-        removeProcess: 'REMOVE_PROCESS'
+        removeProcess: 'REMOVE_PROCESS',
+        updateFile: 'UPDATE_FILE',
+        commitDeleteFile: 'DELETE_FILE'
       })
     }
   }

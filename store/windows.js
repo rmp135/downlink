@@ -1,15 +1,15 @@
 export const state = {
   windows: [
     {
-      title: 'some title',
+      title: 'Disk Manager',
       program: 'disk-manager',
       position: {
-        x: 500,
-        y: 500
+        x: 200,
+        y: 200
       }
     },
     {
-      title: 'some title',
+      title: 'Processor',
       program: 'processor',
       position: {
         x: 100,

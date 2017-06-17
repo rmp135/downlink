@@ -11,6 +11,7 @@
   .window-frame {
     border: 1px solid green;
     position: absolute;
+    background-color: black;
     .title-bar {
       cursor: move;
       padding: 5px;
