@@ -8,6 +8,7 @@
       span DOWN
       span.files
         span.file(v-for="file in disk.files", :style="{width:file.size+'rem', left:file.position+'rem'}", @click="selectFile(file, disk)")
+          span.selected(v-show="file === selectedFile") X
           span.loading(:style="{width:file.percent+'%'}")
           span.background(:style="{width:100-file.percent+'%'}")
       span.slots
@@ -37,6 +38,11 @@
             background-color: black;
             border: 1px solid green;
             box-sizing: border-box;
+          }
+          .selected {
+            color: green;
+            mix-blend-mode: difference;
+            position: absolute;
           }
           cursor: pointer;
           position: absolute;
