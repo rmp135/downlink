@@ -2,10 +2,6 @@
   .disk-manager
     .disk(v-for="(disk, index) in disks")
       span {{disk.name}}
-      span |
-      span UP
-      span |
-      span DOWN
       span.files
         span.file(v-for="file in disk.files", :style="{width:file.size+'rem', left:file.position+'rem'}", @click="selectFile(file, disk)")
           span.selected(v-show="file === selectedFile") X
@@ -20,6 +16,8 @@
         span.action(:class="{disabled:!canMoveUp(selectedFile, index)}", @click="copyUp(selectedFile, index)") CPYUP
         span  | 
         span.action(:class="{disabled:!canMoveDown(selectedFile, index)}", @click="copyDown(selectedFile, index)") CPYDWN
+        span  | 
+        span.action(@click="openFile(selectedFile)") OPEN
 </template>
 <style lang="scss">
   .disk-manager {
@@ -189,7 +187,7 @@
       onFileDeleteClick (file, disk) {
         this.deleteFile(file)
       },
-      ...mapActions('localhost', ['copyFile', 'deleteFile']),
+      ...mapActions('localhost', ['copyFile', 'deleteFile', 'openFile']),
       ...mapMutations('localhost', {
         createFile: 'CREATE_FILE',
         moveDisk: 'MOVE_DISK',

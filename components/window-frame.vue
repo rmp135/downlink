@@ -5,7 +5,7 @@
       span.title {{window.title}}
       span.close(@click="onCloseClick") X
     .content(:class="{minimised: minimised}")
-      div(:is="window.program")
+      div(:is="window.program", :program-data="window.data")
 </template>
 <style lang="scss">
   .window-frame {
@@ -33,9 +33,9 @@
 </style>
 <script>
   import { mapState, mapMutations } from 'vuex'
-  import Tracker from '~components/tracker'
   import DiskManager from '~components/disk-manager'
   import ActivityMonitor from '~components/activity-monitor'
+  import FilePreview from '~components/file-preview'
 
   export default {
     props: {
@@ -95,9 +95,9 @@
       })
     },
     components: {
-      Tracker,
       DiskManager,
-      ActivityMonitor
+      ActivityMonitor,
+      FilePreview
     }
   }
 </script>

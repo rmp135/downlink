@@ -21,6 +21,31 @@ export const state = {
   ]
 }
 
+export const actions = {
+  forceAddWindow ({ commit }, window) {
+    window = {
+      title: 'Untitled Window',
+      index: 0,
+      data: { },
+      position: {
+        x: 0,
+        y: 0
+      },
+      ...window
+    }
+    commit('ADD_WINDOW', window)
+    commit('SET_TOP_WINDOW', window)
+  },
+  addWindow ({ state, commit, dispatch }, window) {
+    const openWindow = state.windows.find(w => w.program === window.program)
+    if (openWindow !== undefined) {
+      commit('SET_TOP_WINDOW', window)
+      return
+    }
+    dispatch('forceAddWindow', window)
+  }
+}
+
 export const mutations = {
   SET_TOP_WINDOW (state, window) {
     window.index = state.windows.map(w => w.index).reduce(((i1, i2) => i1 > i2 ? i1 : i2), 0) + 1
@@ -30,5 +55,8 @@ export const mutations = {
   },
   REMOVE_WINDOW (state, window) {
     state.windows.splice(state.windows.indexOf(window), 1)
+  },
+  ADD_WINDOW (state, window) {
+    state.windows.push(window)
   }
 }

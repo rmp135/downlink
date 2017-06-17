@@ -8,7 +8,20 @@ export const state = {
     {
       name: 'DISK1',
       capacity: 10,
-      files: [ ]
+      files: [
+        {
+          name: 'test file',
+          position: 0,
+          size: 1,
+          percent: 100, //TODO: Change this from percent to transferred.
+          type: 'document',
+          metadata: {
+            contents: `Due to using a single state tree, all state of our application is contained inside one big object. However, as our application grows in scale, the store can get really bloated.
+
+To help with that, Vuex allows us to divide our store into modules. Each module can contain its own state, mutations, actions, getters, and even nested modules - it's fractal all the way down:`
+          }
+        }
+      ]
     },
     {
       name: 'DISK2',
@@ -64,9 +77,12 @@ export const getters = {
   topProcID (state) {
     if (state.processes.length === 0) return 1
     return state.processes.slice().sort((p1, p2) => p2.id - p1.id)[0].id
-  },
+  }, 
   allFiles (state) {
     return state.disks.map(d => d.files).reduce((f1, f2) => f1.concat(f2))
+  },
+  allPrograms (state, getters) {
+    return state.programs.concat(getters.allFiles.filter(f => f.type === 'program').map(f => ({ name: f.name, type: f.metadata.type }) ))
   }
 }
 
@@ -93,6 +109,16 @@ export const actions = {
     process.id = getters.topProcID + 1
     commit('ADD_PROCESS', process)
     return process
+  },
+  openFile ({ dispatch }, file) {
+    const newWindow = {
+      program: 'file-preview',
+      title: file.name,
+      data: {
+        contents: file.metadata.contents
+      }
+    }
+    dispatch('windows/forceAddWindow', newWindow, { root: true })
   }
 }
 

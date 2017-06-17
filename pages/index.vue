@@ -32,12 +32,10 @@
 
   export default {
     computed: {
-      ...mapState('windows',
-        ['windows']
-      )
+      ...mapState('windows', ['windows'])
     },
     mounted () {
-      this.$store.dispatch('localhost/createFile')
+      // this.$store.dispatch('localhost/createFile')
     },
     methods: {
       onMouseMove (e) {

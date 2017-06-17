@@ -32,3 +32,7 @@ disks: {
   }
 }
 ```
+
+# Windows
+
+Windows are supplied with a windowData prop. This can be used to initialise a window with pre-populated data (such as a text file).
