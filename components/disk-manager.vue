@@ -2,7 +2,9 @@
   .disk-manager
     .disk(v-for="(disk, index) in disks")
       span {{disk.name}}
+      span |
       span UP
+      span |
       span DOWN
       span.files
         span.file(v-for="file in disk.files", :style="{width:file.size+'rem', left:file.position+'rem'}", @click="selectFile(file, disk)")
@@ -12,7 +14,7 @@
         span.slot(v-for="i in disk.capacity")
       .info(v-if="disk === selectedDisk")
         span {{selectedFile.name}} | 
-        span.action(@click="onFileDeleteClick(selectedFile, disk)") DEL
+        span.action(:class="{disabled:!canDeleteFile(selectedFile)}" @click="onFileDeleteClick(selectedFile, disk)") DEL
         span  | 
         span.action(:class="{disabled:!canMoveUp(selectedFile, index)}", @click="copyUp(selectedFile, index)") CPYUP
         span  | 
@@ -78,23 +80,26 @@
     },
     computed: {
       ...mapState('localhost', ['disks']),
-      ...mapGetters('localhost', ['allFiles', 'percentProcesses'])
+      ...mapGetters('localhost', ['allFiles', 'processesWithPercent', 'lockedFiles'])
     },
     mounted () {
       setInterval(this.process, 100)
     },
     methods: {
       process () {
-        let toRemove = []
-        for (let process of this.percentProcesses) {
+        const toRemove = []
+        for (let processWrapper of this.processesWithPercent) {
+          const process = processWrapper.process
+          if (processWrapper.percent === 0) continue
           switch (process.name) {
             case 'file-copy': {
               const file = this.allFiles.find(f => f.guid === process.metadata.to)
-              if (file === undefined  || file.percent === 100 || !this.allFiles.find(f => f.guid === process.metadata.from)) {
+              const fromFile = this.allFiles.find(f => f.guid === process.metadata.from)
+              if (file === undefined  || file.percent === 100 || fromFile.percent < 100 || !this.allFiles.find(f => f.guid === process.metadata.from)) {
                 toRemove.push(process)
                 break
               }
-              this.updateFile({ file, newFile: { ...file, percent: Math.min(file.percent += 5 * process.percent / 100, 100) } })
+              this.updateFile({ file, newFile: { ...file, percent: Math.min(file.percent += 3 * processWrapper.percent / 100, 100) } })
               break
             }
             case 'file-delete': {
@@ -110,7 +115,7 @@
                 }
                 break
               }
-              this.updateFile({ file, newFile: { ...file, percent: file.percent -= 10 * process.percent / 100 } })
+              this.updateFile({ file, newFile: { ...file, percent: file.percent -= 5 * processWrapper.percent / 100 } })
               break
             }
           }
@@ -134,6 +139,9 @@
           return { position: f.position + f.size, size: gap }
         })
         .filter(f => f.size > 0)
+      },
+      canDeleteFile (file) {
+        return !this.lockedFiles.includes(file.guid)
       },
       canHoldFile (file, disk) {
         return this.gapsInDisk(disk).some(f => f.size >= file.size)

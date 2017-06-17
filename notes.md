@@ -3,16 +3,32 @@
 ## file-copy
 
 ```
+locks: String[],
 metadata: {
-  from: guid of file to be copied from,
-  to: guid of file to be coped it
+  from: String
+  to: String
 }
 ```
 
 ## file-delete
 
 ```
+locks: String[],
 metadata: {
-  file: guid of file to be deleted
+  file: String
+}
+```
+
+# Target
+
+```
+disks: {
+  size: Number,
+  name: String,
+  files: {
+    name: String
+    size: Number,
+    position: Number
+  }
 }
 ```

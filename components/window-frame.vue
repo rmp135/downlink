@@ -1,6 +1,6 @@
 <template lang="pug">
-  .window-frame(:style="{left:window.position.x+'px', top:window.position.y+'px'}")
-    .title-bar(@mousedown="onMouseDown", @mouseup="onMouseUp")
+  .window-frame(@mousedown="onMouseDown", :style="{zIndex: window.index, left:window.position.x+'px', top:window.position.y+'px'}")
+    .title-bar(@mousedown="onTitleMouseDown", @mouseup="onMouseUp")
       span.minimise(@click="onMinimiseClick") _
       span.title {{window.title}}
       span.close(@click="onCloseClick") X
@@ -35,7 +35,7 @@
   import { mapState, mapMutations } from 'vuex'
   import Tracker from '~components/tracker'
   import DiskManager from '~components/disk-manager'
-  import Processor from '~components/processor'
+  import ActivityMonitor from '~components/activity-monitor'
 
   export default {
     props: {
@@ -71,10 +71,13 @@
       }, { deep: true })
     },
     methods: {
-      onMouseDown (e) {
+      onTitleMouseDown (e) {
         this.dragging = true
         this.dragPoint.x = e.layerX
         this.dragPoint.y = e.layerY
+      },
+      onMouseDown () {
+        this.setTopWindow(this.window)
       },
       onMouseUp () {
         this.dragging = false
@@ -87,13 +90,14 @@
       },
       ...mapMutations('windows', {
         updateWindow: 'UPDATE_WINDOW',
-        removeWindow: 'REMOVE_WINDOW'
+        removeWindow: 'REMOVE_WINDOW',
+        setTopWindow: 'SET_TOP_WINDOW'
       })
     },
     components: {
       Tracker,
       DiskManager,
-      Processor
+      ActivityMonitor
     }
   }
 </script>

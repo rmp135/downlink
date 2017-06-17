@@ -3,6 +3,7 @@ import Guid from '~/helpers/guid.js'
 
 export const state = {
   processes: [ ],
+  // processes: [ { id: 1, name: 'test', priority: 1 }, { id:2, name: 'test-2', priority: 2 } ],
   disks: [
     {
       name: 'DISK1',
@@ -34,7 +35,7 @@ export const state = {
       type: "network"
     },
     {
-      name: "disk",
+      name: "disk-manager",
       type: "hardware"
     },
     {
@@ -45,18 +46,24 @@ export const state = {
 }
 
 export const getters = {
+  lockedFiles (state) {
+    return state.processes.map(s => s.locks).reduce(((l1, l2) => l1.concat(l2)), [])
+  },
+  processesWithPercent (state) {
+    var total = state.processes.map(p => p.priority).reduce(((p1, p2) => p1 + p2), 0)
+    const asPercent = (process) => {
+      return process.priority === 0 ? 0 : Math.floor(process.priority / total * 100)
+    }
+    return state.processes.map(p => {
+      return {
+        process: p,
+        percent: Math.max(Math.min(Math.floor(asPercent(p)), 100), 0)
+      }
+    })
+  },
   topProcID (state) {
     if (state.processes.length === 0) return 1
     return state.processes.slice().sort((p1, p2) => p2.id - p1.id)[0].id
-  },
-  percentProcesses (state, getters) {
-    var total = state.processes.map(p => p.priority).reduce(((p1, p2) => p1 + p2), 0)
-    return state.processes.map(p => {
-      return {
-        ...p,
-        percent: Math.floor(p.priority / total * 100)
-      }
-    })
   },
   allFiles (state) {
     return state.disks.map(d => d.files).reduce((f1, f2) => f1.concat(f2))
@@ -75,12 +82,12 @@ export const actions = {
     commit('CREATE_FILE', { disk, file })
   },
   deleteFile ({ dispatch }, file) {
-    dispatch('addProcess', { name: 'file-delete', metadata: { file: file.guid }})
+    dispatch('addProcess', { name: 'file-delete', locks: [file.guid], metadata: { file: file.guid }})
   },
   copyFile ({ state, commit, dispatch }, { fromFile, to: { disk, file } }) {
     file.percent = 0
     commit('CREATE_FILE', { disk, file })
-    dispatch('addProcess', { name: 'file-copy', metadata: { from: fromFile.guid, to: file.guid }})
+    dispatch('addProcess', { name: 'file-copy', locks: [file.guid], metadata: { from: fromFile.guid, to: file.guid }})
   },
   addProcess ({ state, commit, getters }, process) {
     process.id = getters.topProcID + 1
@@ -110,13 +117,12 @@ export const mutations = {
     state.processes.push(process)
   },
   REMOVE_PROCESS (state, process) {
-    const procIndex = state.processes.find(p => p.id === process.id)
-    if (procIndex != undefined) {
+    const procIndex = state.processes.indexOf(process)
+    if (procIndex != -1) {
       state.processes.splice(procIndex, 1)
     }
   },
-  UPDATE_PROCESS_PRIORITY (state, { id, amount }) {
-    const process = state.processes.find(p => p.id === id)
+  UPDATE_PROCESS_PRIORITY (state, { process, amount }) {
     process.priority = Math.max(process.priority + amount, 0)
   }
 }
