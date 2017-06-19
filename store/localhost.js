@@ -36,18 +36,6 @@ export const state = {
   ],
   programs: [
     {
-      name: "tracker",
-      type: "utilities"
-    },
-    {
-      name: "ping",
-      type: "network"
-    },
-    {
-      name: "trace",
-      type: "network"
-    },
-    {
       name: "disk-manager",
       type: "hardware"
     },
