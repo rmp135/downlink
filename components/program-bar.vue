@@ -31,7 +31,7 @@
   export default {
     data () {
       return {
-        activeMenu: 0
+        activeMenu: null
       }
     },
     computed: {
