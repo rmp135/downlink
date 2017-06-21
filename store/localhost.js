@@ -7,6 +7,7 @@ export const state = {
   disks: [
     {
       name: 'DISK1',
+      guid: 'guid',
       capacity: 10,
       files: [
         {
@@ -47,8 +48,8 @@ export const state = {
 }
 
 export const getters = {
-  lockedFiles (state) {
-    return state.processes.map(s => s.locks).reduce(((l1, l2) => l1.concat(l2)), [])
+  lockedFiles (state, getters, rootState) {
+    return rootState.windows.windows.concat(state.processes).map(s => s.locks).reduce(((l1, l2) => l1.concat(l2)), [])
   },
   processesWithPercent (state) {
     var total = state.processes.map(p => p.priority).reduce(((p1, p2) => p1 + p2), 0)
@@ -75,16 +76,6 @@ export const getters = {
 }
 
 export const actions = {
-  createFile ({ state, commit }) {
-    const disk = state.disks[0]
-    const file = {
-      position: 0,
-      size: 3,
-      percent: 100,
-      name: 'test'
-    }
-    commit('CREATE_FILE', { disk, file })
-  },
   deleteFile ({ dispatch }, file) {
     dispatch('addProcess', { name: 'file-delete', locks: [file.guid], metadata: { file: file.guid }})
   },
@@ -102,6 +93,7 @@ export const actions = {
     const newWindow = {
       program: 'file-preview',
       title: file.name,
+      locks: [file.guid],
       data: {
         contents: file.metadata.contents
       }

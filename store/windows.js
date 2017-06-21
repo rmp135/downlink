@@ -4,6 +4,7 @@ export const state = {
       title: 'Disk Manager',
       program: 'disk-manager',
       index: 0,
+      locks: [],
       position: {
         x: 200,
         y: 200
@@ -13,6 +14,7 @@ export const state = {
       title: 'Activity Monitor',
       program: 'activity-monitor',
       index: 1,
+      locks: [],
       position: {
         x: 100,
         y: 100
@@ -27,6 +29,7 @@ export const actions = {
       title: 'Untitled Window',
       index: 0,
       data: { },
+      locks: [],
       position: {
         x: 0,
         y: 0
