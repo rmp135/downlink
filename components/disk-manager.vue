@@ -1,66 +1,83 @@
 <template lang="pug">
   .disk-manager
-    .disk(v-for="(disk, index) in disks")
-      span {{disk.name}}
-      span.files
-        span.file(v-for="file in disk.files", :style="{width:file.size+'rem', left:file.position+'rem'}", @click="selectFile(file, disk)")
-          span.selected(v-show="file === selectedFile") X
-          span.loading(:style="{width:file.percent+'%'}")
-          span.background(:style="{width:100-file.percent+'%'}")
-      span.slots
-        span.slot(v-for="i in disk.capacity")
-      .info(v-if="disk === selectedDisk")
-        span {{selectedFile.name}} | 
-        span.action(:class="{disabled:!canDeleteFile(selectedFile)}" @click="onFileDeleteClick(selectedFile, disk)") DEL
-        span  | 
-        span.action(:class="{disabled:!canMoveUp(selectedFile, index)}", @click="copyUp(selectedFile, index)") CPYUP
-        span  | 
-        span.action(:class="{disabled:!canMoveDown(selectedFile, index)}", @click="copyDown(selectedFile, index)") CPYDWN
-        span  | 
-        span.action(@click="openFile(selectedFile)") OPEN
+    .commands
+      span.action(:class="{disabled:!canDeleteFile(selectedFile)}" @click="attemptDeleteFile(selectedFile, storage)") DEL
+      span |
+      span.action(:class="{disabled:!canOpenFile(selectedFile)}" @click="attemptOpenFile(selectedFile)") OPEN
+      span |
+      span.action(:class="{disabled:!canTransferFile(selectedFile)}" @click="attemptTransferFile(selectedFile)") TRANS
+    .disks
+      .localhost
+        .files
+          .file(v-for="file in storage.files", :style="{height:file.size+'rem', top:file.position+'rem'}", @click="selectFile(file, storage)")
+            .name
+              span(v-if="selectedFile === file") &#10004;
+              span {{file.name}}
+            .background(:style="{width:file.percent+'%'}")
+        .slots  
+          .slot(v-for="i in storage.capacity")
+      .target
+        .no-target-wrapper(v-if="targetStorage == null")
+          span Not connected to a remote host.
+        .wrapper(v-else)
+          .files
+            .file(v-for="file in targetStorage.files", :style="{height:file.size+'rem', top:file.position+'rem'}", @click="selectFile(file, targetStorage)")
+              .name
+                span(v-if="selectedFile === file") &#10004;
+                span {{file.name}}
+              .background(:style="{width:file.percent+'%'}")
+          .slots  
+            .slot(v-for="i in targetStorage.capacity")
+
 </template>
 <style lang="scss">
   .disk-manager {
-    .disk {
-      .files {
+    width: 20rem;
+    .disks {
+      display: flex;
+      & > * {
+        flex-grow: 1;
+        flex-basis: 0;
+      }
+    }
+    .target {
+      margin-left: 0.5rem;
+      .no-target-wrapper {
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+      }
+    }
+    .files {
+      position: relative;
+      .file {
         position: absolute;
-        .file {
-          .loading {
-            background-color: green;
-            width: 100%;
-            height: inherit;
-          }
-          .background {
-            width: 100%;
-            height: inherit;
-            background-color: black;
-            border: 1px solid green;
-            box-sizing: border-box;
-          }
-          .selected {
-            color: green;
-            mix-blend-mode: difference;
-            position: absolute;
-          }
-          cursor: pointer;
+        width: 100%;
+        background: black;
+        border-bottom: green solid 1px;
+        .background {
+          height: 100%;
+          background: green;
+        }
+        .name {
+          cursor: default;
+          mix-blend-mode: difference;
           position: absolute;
+          width: 100%;
+          height: 100%;
           display: flex;
-          justify-content: center;
+          color: green;
           align-items: center;
-          color: black;
-          border-left: 1px solid black;
-          border-right: 1px solid black;
+          justify-content: center;
         }
       }
-      .file, .slot {
-        display: inline-block;
-        box-sizing: border-box;
-        height: 1rem;
-      }
-      .slot {
-        border: 1px solid green;
-        width: 1rem;
-      }
+    }
+    .slot {
+      box-sizing: border-box;
+      border-bottom: green solid 1px;
+      height: 1rem;
     }
     .action {
       cursor: pointer;
@@ -83,11 +100,16 @@
       }
     },
     computed: {
-      ...mapState('localhost', ['disks']),
-      ...mapGetters('localhost', ['allFiles', 'processesWithPercent', 'lockedFiles'])
+      ...mapState('localhost', ['storage']),
+      ...mapState('target', {
+        targetStorage: (state) => state.target !=  null ? state.target.storage : null
+      }),
+      ...mapGetters('filesystem', ['allFiles', 'fileDiskMap', 'lockedFiles']),
+      ...mapGetters('localhost', ['processesWithPercent'])
     },
     mounted () {
-      setInterval(this.process, 100)
+      setInterval(this.process, 100) //TODO: Remove this interval on component destruction. 
+      // this.$store.commit('target/SET_TARGET', null)
     },
     methods: {
       process () {
@@ -107,15 +129,16 @@
               break
             }
             case 'file-delete': {
-              const file = this.allFiles.find(f => f.guid === process.metadata.file)
-              if (file === undefined || file.percent <= 0) {
+              const { file, storage } = this.fileDiskMap.find(f => f.file.guid === process.metadata.file)
+              if (file === undefined) {
                 toRemove.push(process)
-                if (file.percent <= 0) {
-                  this.commitDeleteFile({ disk: this.disks.find(d => d.files.includes(file)) , file })
-                  if (this.selectedFile == file) {
-                    this.selectedDisk = null
-                    this.selectedFile = null
-                  }
+              }
+              else if (file.percent <= 0) {
+                toRemove.push(process)
+                this.commitDeleteFile({ storage, file })
+                if (this.selectedFile == file) {
+                  this.selectedDisk = null
+                  this.selectedFile = null
                 }
                 break
               }
@@ -128,15 +151,15 @@
           this.removeProcess(process)
         }
       },
-      gapsInDisk (disk) {
-        const newFiles = disk.files.slice()
+      gapsInStorage (storage) {
+        const newFiles = storage.files.slice()
         newFiles.push({ position: 0, size: 0, placeholder: true })
         return newFiles
         .sort((f1, f2) => (f1.position > f2.position || (!f1.placeholder && f2.placeholder)) ? 1 : -1)
         .map((f, index) => {
           let gap = 0
           if (index === newFiles.length - 1) {
-            gap = disk.capacity - f.position - f.size
+            gap = storage.capacity - f.position - f.size
           } else {
             gap = newFiles[index+1].position - f.position - f.size
           }
@@ -145,35 +168,19 @@
         .filter(f => f.size > 0)
       },
       canDeleteFile (file) {
+        if (file === null) return false
         return !this.lockedFiles.includes(file.guid)
       },
-      canHoldFile (file, disk) {
-        return this.gapsInDisk(disk).some(f => f.size >= file.size)
+      canTransferFile (file) {
+        if (this.selectedFile === null || this.selectedFile.percent < 100 || this.targetStorage === null) return false
+        const storage = this.selectedDisk === this.storage ? this.targetStorage : this.storage
+        return this.gapsInStorage(storage).some(f => f.size >= file.size)
       },
-      canMoveFile (file) {
-        return file.percent === 100
-      },
-      canMoveUp (file, diskIndex) {
-        if (diskIndex === 0 || !this.canMoveFile(file)) return false
-        return this.canHoldFile(file, this.disks[diskIndex-1])
-      },
-      canMoveDown (file, diskIndex) {
-        if (diskIndex === this.disks.length - 1 || !this.canMoveFile(file)) return false
-        return this.canHoldFile(file, this.disks[diskIndex+1])
-      },
-      async copyDown (file, diskIndex) {
-        if (!this.canMoveDown(file, diskIndex)) return
-        const gaps = this.gapsInDisk(this.disks[diskIndex + 1])
+      async transferFile (file, storage) {
+        const gaps = this.gapsInStorage(storage)
         const newFile = cloneDeep(file)
         newFile.position = gaps.find(g => g.size >= file.size).position
-        this.copyFile({ fromFile: file, to: { disk: this.disks[diskIndex + 1], file: newFile }})
-      },
-      copyUp (file, diskIndex) {
-        if (!this.canMoveUp(file, diskIndex)) return
-        const gaps = this.gapsInDisk(this.disks[diskIndex - 1])
-        const newFile = cloneDeep(file)
-        newFile.position = gaps.find(g => g.size >= file.size).position
-        this.copyFile({ fromFile: file, to: { disk: this.disks[diskIndex - 1], file: newFile }})
+        this.beginCopyFileProcess({ fromFile: file, to: { storage, file: newFile }})
       },
       selectFile (file, disk) {
         if (file === this.selectedFile) {
@@ -184,16 +191,30 @@
         this.selectedFile = file
         this.selectedDisk = disk
       },
-      onFileDeleteClick (file, disk) {
-        this.deleteFile(file)
+      canOpenFile (file) {
+        return file !== null && file.percent == 100
       },
-      ...mapActions('localhost', ['copyFile', 'deleteFile', 'openFile']),
-      ...mapMutations('localhost', {
+      attemptOpenFile (file) {
+        if (!this.canOpenFile(file)) return
+        this.openFile(file)
+      },
+      attemptDeleteFile (file, storage) {
+        if (!this.canDeleteFile(file)) return
+        this.beginDeleteProcess(file)
+      },
+      attemptTransferFile (file) {
+        const storage = this.selectedDisk === this.storage ? this.targetStorage : this.storage
+        if (file == null || storage == null) return
+        this.transferFile(file, storage)
+      },
+      ...mapActions('filesystem', ['beginDeleteProcess', 'beginCopyFileProcess', 'openFile']),
+      ...mapMutations('filesystem', {
+        commitDeleteFile: 'DELETE_FILE',
         createFile: 'CREATE_FILE',
-        moveDisk: 'MOVE_DISK',
-        removeProcess: 'REMOVE_PROCESS',
-        updateFile: 'UPDATE_FILE',
-        commitDeleteFile: 'DELETE_FILE'
+        updateFile: 'UPDATE_FILE'
+      }),
+      ...mapMutations('localhost', {
+        removeProcess: 'REMOVE_PROCESS'
       })
     }
   }

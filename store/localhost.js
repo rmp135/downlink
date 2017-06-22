@@ -4,37 +4,39 @@ import Guid from '~/helpers/guid.js'
 export const state = {
   processes: [ ],
   // processes: [ { id: 1, name: 'test', priority: 1 }, { id:2, name: 'test-2', priority: 2 } ],
-  disks: [
-    {
-      name: 'DISK1',
-      guid: 'guid',
-      capacity: 10,
-      files: [
-        {
-          name: 'test file',
-          position: 0,
-          size: 1,
-          percent: 100, //TODO: Change this from percent to transferred.
-          type: 'document',
-          metadata: {
-            contents: `This is some information. And some more.
-            
-            More information`
-          }
+  storage:
+  {
+    name: 'DISK1',
+    capacity: 30,
+    files: [
+      {
+        name: 'another file',
+        guid: 'guid2',
+        position: 0,
+        size: 1,
+        percent: 100, //TODO: Change this from percent to transferred.
+        type: 'document',
+        metadata: {
+          contents: `This is some information. And some more.
+          
+          More information`
         }
-      ]
-    },
-    {
-      name: 'DISK2',
-      capacity: 20,
-      files: [ ]
-    },
-    {
-      name: 'DISK3',
-      capacity: 5,
-      files: [ ]
-    },
-  ],
+      },
+      {
+        name: 'test file',
+        guid: 'guid',
+        position: 2,
+        size: 6,
+        percent: 20, //TODO: Change this from percent to transferred.
+        type: 'document',
+        metadata: {
+          contents: `This is some information. And some more.
+          
+          More information`
+        }
+      }
+    ]
+  },
   programs: [
     {
       name: "disk-manager",
@@ -48,9 +50,6 @@ export const state = {
 }
 
 export const getters = {
-  lockedFiles (state, getters, rootState) {
-    return rootState.windows.windows.concat(state.processes).map(s => s.locks).reduce(((l1, l2) => l1.concat(l2)), [])
-  },
   processesWithPercent (state) {
     var total = state.processes.map(p => p.priority).reduce(((p1, p2) => p1 + p2), 0)
     const asPercent = (process) => {
@@ -67,57 +66,20 @@ export const getters = {
     if (state.processes.length === 0) return 1
     return state.processes.slice().sort((p1, p2) => p2.id - p1.id)[0].id
   }, 
-  allFiles (state) {
-    return state.disks.map(d => d.files).reduce((f1, f2) => f1.concat(f2))
-  },
   allPrograms (state, getters) {
-    return state.programs.concat(getters.allFiles.filter(f => f.type === 'program').map(f => ({ name: f.name, type: f.metadata.type }) ))
+    return state.programs.concat(state.storage.files.filter(f => f.type === 'program').map(f => ({ name: f.name, type: f.metadata.type }) ))
   }
 }
 
 export const actions = {
-  deleteFile ({ dispatch }, file) {
-    dispatch('addProcess', { name: 'file-delete', locks: [file.guid], metadata: { file: file.guid }})
-  },
-  copyFile ({ state, commit, dispatch }, { fromFile, to: { disk, file } }) {
-    file.percent = 0
-    commit('CREATE_FILE', { disk, file })
-    dispatch('addProcess', { name: 'file-copy', locks: [file.guid], metadata: { from: fromFile.guid, to: file.guid }})
-  },
   addProcess ({ state, commit, getters }, process) {
     process.id = getters.topProcID + 1
     commit('ADD_PROCESS', process)
     return process
-  },
-  openFile ({ dispatch }, file) {
-    const newWindow = {
-      program: 'file-preview',
-      title: file.name,
-      locks: [file.guid],
-      data: {
-        contents: file.metadata.contents
-      }
-    }
-    dispatch('windows/forceAddWindow', newWindow, { root: true })
   }
 }
 
 export const mutations = {
-  DELETE_FILE (state, { file, disk }) {
-    disk.files.splice(disk.files.indexOf(file), 1)
-  },
-  CREATE_FILE (state, { file, disk }) {
-    file.guid = Guid()
-    disk.files.push(file)
-  },
-  UPDATE_FILE (state, { file, newFile }) {
-    Object.assign(file, newFile)
-  },
-  MOVE_DISK (state, { diskIndex, index }) {
-    const disk = state.disks[diskIndex]
-    state.disks.splice(diskIndex, 1)
-    state.disks.splice(diskIndex, 0, disk)
-  },
   ADD_PROCESS (state, process) {
     process.priority = 1
     state.processes.push(process)
