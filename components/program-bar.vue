@@ -1,12 +1,3 @@
-<template lang="pug">
-  #program-bar
-    .program-group(v-for="(value, key, index) in groupedPrograms", @mouseout.stop="onMouseOut") 
-      .programs-list(:class="{hidden: index !== activeMenu}")
-        .program(v-for="program in value")
-          a(@click="onClick(program)") {{program.name}}
-      .title(@mouseover="onMouseOver(index)")
-        a {{key}}
-</template>
 <style lang="scss">
   #program-bar {
     width: 500px;
@@ -25,6 +16,15 @@
     }
   }
 </style>
+<template lang="pug">
+  #program-bar
+    .program-group(v-for="(value, key, index) in groupedPrograms", @mouseout.stop="onMouseOut") 
+      .programs-list(:class="{hidden: index !== activeMenu}")
+        .program(v-for="program in value")
+          a(@click="onClick(program)") {{program.name}}
+      .title(@mouseover="onMouseOver(index)")
+        a {{key}}
+</template>
 <script>
   import Vuex from 'vuex'
 

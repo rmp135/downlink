@@ -1,35 +1,3 @@
-<template lang="pug">
-  .disk-manager
-    .commands
-      span.action(:class="{disabled:!canDeleteFile(selectedFile)}" @click="attemptDeleteFile(selectedFile, storage)") DEL
-      span |
-      span.action(:class="{disabled:!canOpenFile(selectedFile)}" @click="attemptOpenFile(selectedFile)") OPEN
-      span |
-      span.action(:class="{disabled:!canTransferFile(selectedFile)}" @click="attemptTransferFile(selectedFile)") TRANS
-    .disks
-      .localhost
-        .files
-          .file(v-for="file in storage.files", :style="{height:file.size+'rem', top:file.position+'rem'}", @click="selectFile(file, storage)")
-            .name
-              span(v-if="selectedFile === file") &#10004;
-              span {{file.name}}
-            .background(:style="{width:file.percent+'%'}")
-        .slots  
-          .slot(v-for="i in storage.capacity")
-      .target
-        .no-target-wrapper(v-if="targetStorage == null")
-          span Not connected to a remote host.
-        .wrapper(v-else)
-          .files
-            .file(v-for="file in targetStorage.files", :style="{height:file.size+'rem', top:file.position+'rem'}", @click="selectFile(file, targetStorage)")
-              .name
-                span(v-if="selectedFile === file") &#10004;
-                span {{file.name}}
-              .background(:style="{width:file.percent+'%'}")
-          .slots  
-            .slot(v-for="i in targetStorage.capacity")
-
-</template>
 <style lang="scss">
   .disk-manager {
     width: 20rem;
@@ -88,6 +56,38 @@
     }
   }
 </style>
+<template lang="pug">
+  .disk-manager
+    .commands
+      span.action(:class="{disabled:!canDeleteFile(selectedFile)}" @click="attemptDeleteFile(selectedFile, storage)") DEL
+      span |
+      span.action(:class="{disabled:!canOpenFile(selectedFile)}" @click="attemptOpenFile(selectedFile)") OPEN
+      span |
+      span.action(:class="{disabled:!canTransferFile(selectedFile)}" @click="attemptTransferFile(selectedFile)") TRANS
+    .disks
+      .localhost
+        .files
+          .file(v-for="file in storage.files", :style="{height:file.size+'rem', top:file.position+'rem'}", @click="selectFile(file, storage)")
+            .name
+              span(v-if="selectedFile === file") &#10004;
+              span {{file.name}}
+            .background(:style="{width:file.percent+'%'}")
+        .slots  
+          .slot(v-for="i in storage.capacity")
+      .target
+        .no-target-wrapper(v-if="targetStorage == null")
+          span Not connected to a remote host.
+        .wrapper(v-else)
+          .files
+            .file(v-for="file in targetStorage.files", :style="{height:file.size+'rem', top:file.position+'rem'}", @click="selectFile(file, targetStorage)")
+              .name
+                span(v-if="selectedFile === file") &#10004;
+                span {{file.name}}
+              .background(:style="{width:file.percent+'%'}")
+          .slots  
+            .slot(v-for="i in targetStorage.capacity")
+
+</template>
 <script>
   import { mapState, mapMutations, mapActions, mapGetters } from 'vuex'
   import cloneDeep from 'lodash/cloneDeep'

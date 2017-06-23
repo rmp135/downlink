@@ -1,12 +1,3 @@
-<template lang="pug">
-  .window-frame(@mousedown="onMouseDown", :style="{zIndex: window.index, left:window.position.x+'px', top:window.position.y+'px'}")
-    .title-bar(@mousedown="onTitleMouseDown", @mouseup="onMouseUp")
-      span.minimise(@click="onMinimiseClick") _
-      span.title {{window.title}}
-      span.close(@click="onCloseClick") X
-    .content(:class="{minimised: minimised}")
-      div(:is="window.program", :program-data="window.data")
-</template>
 <style lang="scss">
   .window-frame {
     border: 1px solid green;
@@ -31,6 +22,15 @@
     }
   }
 </style>
+<template lang="pug">
+  .window-frame(@mousedown="onMouseDown", :style="{zIndex: window.index, left:window.position.x+'px', top:window.position.y+'px'}")
+    .title-bar(@mousedown="onTitleMouseDown", @mouseup="onMouseUp")
+      span.minimise(@click="onMinimiseClick") _
+      span.title {{window.title}}
+      span.close(@click="onCloseClick") X
+    .content(:class="{minimised: minimised}")
+      div(:is="window.program", :program-data="window.data")
+</template>
 <script>
   import { mapState, mapMutations } from 'vuex'
   import DiskManager from '~components/disk-manager'

@@ -1,7 +1,3 @@
-<template lang="pug">
-  .file-preview
-    .contents {{programData.contents}}
-</template>
 <style lang="scss">
   .file-preview {
     .contents {
@@ -26,6 +22,10 @@
     }
   }
 </style>
+<template lang="pug">
+  .file-preview
+    .contents {{programData.contents}}
+</template>
 <script>
 import WindowDataMixin from './window-data-mixin'
 export default {
