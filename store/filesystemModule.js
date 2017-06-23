@@ -1,4 +1,4 @@
-import Guid from '~/helpers/guid.js'
+import createGUID from '~/helpers/createGUID.js'
 
 export const getters = {
   allFiles (state, getters, rootState) {
@@ -46,7 +46,7 @@ export const mutations = {
     storage.files.splice(storage.files.indexOf(file), 1)
   },
   CREATE_FILE (state, { file, storage }) {
-    file.guid = Guid()
+    file.guid = createGUID()
     storage.files.push(file)
   },
   UPDATE_FILE (state, { file, newFile}) {

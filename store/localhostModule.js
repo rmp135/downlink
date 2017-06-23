@@ -1,5 +1,4 @@
 import Vue from 'vue'
-import Guid from '~/helpers/guid.js'
 
 export const state = {
   processes: [ ],
