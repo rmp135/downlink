@@ -1,6 +1,8 @@
 {
   "scripts": {
-    "start": "nuxt"
+    "start": "nuxt",
+    "predeploy": "nuxt generate",
+    "deploy": "push-dir --dir=dist --branch=gh-pages --cleanup"
   },
   "dependencies": {
     "lodash": "^4.17.4",
@@ -8,6 +10,7 @@
     "nuxt": "^0.10.7",
     "pug": "^2.0.0-rc.1",
     "pug-loader": "^2.3.0",
+    "push-dir": "^0.4.1",
     "sass-loader": "^6.0.5",
     "scss-loader": "^0.0.1"
   }
