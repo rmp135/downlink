@@ -55,9 +55,7 @@
       }
     },
     computed: {
-      ...mapState({
-        mousePosition: (state) => state.global.mousePosition
-      })
+      ...mapState('globalModule', ['mousePosition'])
     },
     mounted () {
       this.$watch('mousePosition', () => {
@@ -88,7 +86,7 @@
       onMinimiseClick () {
         this.minimised = !this.minimised
       },
-      ...mapMutations('windows', {
+      ...mapMutations('windowsModule', {
         updateWindow: 'UPDATE_WINDOW',
         removeWindow: 'REMOVE_WINDOW',
         setTopWindow: 'SET_TOP_WINDOW'

@@ -45,7 +45,7 @@
         }
         return programs
       },
-      ...Vuex.mapGetters('localhost', ['allPrograms'])
+      ...Vuex.mapGetters('localhostModule', ['allPrograms'])
     },
     methods: {
       onMouseOver (index) {
@@ -62,7 +62,7 @@
           title: program.name
         })
       },
-      ...Vuex.mapActions('windows', ['addWindow'])
+      ...Vuex.mapActions('windowsModule', ['addWindow'])
     }
   }
 </script>

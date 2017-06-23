@@ -2,31 +2,31 @@ import Guid from '~/helpers/guid.js'
 
 export const getters = {
   allFiles (state, getters, rootState) {
-    if (rootState.target.target == null) {
-      return rootState.localhost.storage.files
+    if (rootState.targetModule.target == null) {
+      return rootState.localhostModule.storage.files
     }
-    return rootState.target.target.storage.files.concat(rootState.localhost.storage.files)
+    return rootState.targetModule.target.storage.files.concat(rootState.localhostModule.storage.files)
   },
   fileDiskMap (state, getters, rootState) {
     const getMap = (storage) => storage.files.map(file => { return { storage, file }})
-    if (rootState.target.target === null) {
-      return getMap(rootState.localhost.storage)
+    if (rootState.targetModule.target === null) {
+      return getMap(rootState.localhostModule.storage)
     }
-    return getMap(rootState.localhost.storage).concat(getMap(rootState.target.target.storage))
+    return getMap(rootState.localhostModule.storage).concat(getMap(rootState.targetModule.target.storage))
   },
   lockedFiles (state, getters, rootState) {
-    return rootState.windows.windows.concat(rootState.localhost.processes).map(s => s.locks).reduce(((l1, l2) => l1.concat(l2)), [])
+    return rootState.windowsModule.windows.concat(rootState.localhostModule.processes).map(s => s.locks).reduce(((l1, l2) => l1.concat(l2)), [])
   }
 }
 
 export const actions = {
   beginDeleteProcess ({ dispatch }, file) {
-    dispatch('localhost/addProcess', { name: 'file-delete', locks: [file.guid], metadata: { file: file.guid }}, { root: true })
+    dispatch('localhostModule/addProcess', { name: 'file-delete', locks: [file.guid], metadata: { file: file.guid }}, { root: true })
   },
   beginCopyFileProcess ({ state, commit, dispatch }, { fromFile, to: { storage, file } }) {
     file.percent = 0
     commit('CREATE_FILE', { storage, file })
-    dispatch('localhost/addProcess', { name: 'file-copy', locks: [file.guid], metadata: { from: fromFile.guid, to: file.guid }}, { root: true })
+    dispatch('localhostModule/addProcess', { name: 'file-copy', locks: [file.guid], metadata: { from: fromFile.guid, to: file.guid }}, { root: true })
   },
   openFile ({ dispatch }, file) {
     const newWindow = {
@@ -37,7 +37,7 @@ export const actions = {
         contents: file.metadata.contents
       }
     }
-    dispatch('windows/forceAddWindow', newWindow, { root: true })
+    dispatch('windowsModule/forceAddWindow', newWindow, { root: true })
   }  
 }
 

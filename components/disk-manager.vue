@@ -100,12 +100,12 @@
       }
     },
     computed: {
-      ...mapState('localhost', ['storage']),
-      ...mapState('target', {
+      ...mapState('localhostModule', ['storage']),
+      ...mapState('targetModule', {
         targetStorage: (state) => state.target !=  null ? state.target.storage : null
       }),
-      ...mapGetters('filesystem', ['allFiles', 'fileDiskMap', 'lockedFiles']),
-      ...mapGetters('localhost', ['processesWithPercent'])
+      ...mapGetters('filesystemModule', ['allFiles', 'fileDiskMap', 'lockedFiles']),
+      ...mapGetters('localhostModule', ['processesWithPercent'])
     },
     mounted () {
       setInterval(this.process, 100) //TODO: Remove this interval on component destruction. 
@@ -207,13 +207,13 @@
         if (file == null || storage == null) return
         this.transferFile(file, storage)
       },
-      ...mapActions('filesystem', ['beginDeleteProcess', 'beginCopyFileProcess', 'openFile']),
-      ...mapMutations('filesystem', {
+      ...mapActions('filesystemModule', ['beginDeleteProcess', 'beginCopyFileProcess', 'openFile']),
+      ...mapMutations('filesystemModule', {
         commitDeleteFile: 'DELETE_FILE',
         createFile: 'CREATE_FILE',
         updateFile: 'UPDATE_FILE'
       }),
-      ...mapMutations('localhost', {
+      ...mapMutations('localhostModule', {
         removeProcess: 'REMOVE_PROCESS'
       })
     }

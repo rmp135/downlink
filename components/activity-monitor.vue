@@ -48,8 +48,8 @@
           }
         })
       },
-      ...mapState('localhost', ['processes']),
-      ...mapGetters('localhost', ['processesWithPercent'])
+      ...mapState('localhostModule', ['processes']),
+      ...mapGetters('localhostModule', ['processesWithPercent'])
     },
     mounted () {
       this.randomTimer = setInterval(() => {
@@ -66,7 +66,7 @@
       decreasePriority (process) {
         this.updateProcessPriority({ process, amount: -1 })
       },
-      ...mapMutations('localhost', {
+      ...mapMutations('localhostModule', {
         updateProcessPriority: 'UPDATE_PROCESS_PRIORITY',
         killProcess: 'REMOVE_PROCESS'
       })

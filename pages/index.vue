@@ -32,7 +32,7 @@
 
   export default {
     computed: {
-      ...mapState('windows', ['windows'])
+      ...mapState('windowsModule', ['windows'])
     },
     mounted () {
       // this.$store.dispatch('localhost/createFile')
@@ -43,10 +43,10 @@
           this.updateMouse(e)
         }
       },
-      ...mapMutations('global', {
+      ...mapMutations('globalModule', {
         updateMouse: 'UPDATE_MOUSE'
       },
-      ...mapActions('localhost', ['createFile']))
+      ...mapActions('localhostModule', ['createFile']))
     },
     components: {
       ProgramBar,
