@@ -71,7 +71,7 @@
             .name
               span(v-if="selectedFile === file") &#10004;
               span {{file.name}}
-            .background(:style="{width:file.percent+'%'}")
+            .background(:style="{width:file.loaded / file.size * 100+'%'}")
         .slots  
           .slot(v-for="i in storage.capacity")
       .target
@@ -83,7 +83,7 @@
               .name
                 span(v-if="selectedFile === file") &#10004;
                 span {{file.name}}
-              .background(:style="{width:file.percent+'%'}")
+              .background(:style="{width:file.loaded / file.size * 100+'%'}")
           .slots  
             .slot(v-for="i in targetStorage.capacity")
 
@@ -121,11 +121,14 @@
             case 'file-copy': {
               const file = this.allFiles.find(f => f.guid === process.metadata.to)
               const fromFile = this.allFiles.find(f => f.guid === process.metadata.from)
-              if (file === undefined  || file.percent === 100 || fromFile.percent < 100 || !this.allFiles.find(f => f.guid === process.metadata.from)) {
+              if (file === undefined
+                || file.loaded === file.size
+                || fromFile.loaded < fromFile.size
+                || !this.allFiles.find(f => f.guid === process.metadata.from)) {
                 toRemove.push(process)
                 break
               }
-              this.updateFile({ file, newFile: { ...file, percent: Math.min(file.percent += 3 * processWrapper.percent / 100, 100) } })
+              this.updateFile({ file, newFile: { ...file, loaded: Math.min(file.loaded += 0.03 * processWrapper.percent / 100, file.size) } })
               break
             }
             case 'file-delete': {
@@ -133,7 +136,7 @@
               if (file === undefined) {
                 toRemove.push(process)
               }
-              else if (file.percent <= 0) {
+              else if (file.loaded <= 0) {
                 toRemove.push(process)
                 this.commitDeleteFile({ storage, file })
                 if (this.selectedFile == file) {
@@ -142,7 +145,7 @@
                 }
                 break
               }
-              this.updateFile({ file, newFile: { ...file, percent: file.percent -= 5 * processWrapper.percent / 100 } })
+              this.updateFile({ file, newFile: { ...file, percent: file.loaded -= 0.05 * processWrapper.percent / 100 } })
               break
             }
           }
@@ -172,7 +175,7 @@
         return !this.lockedFiles.includes(file.guid)
       },
       canTransferFile (file) {
-        if (this.selectedFile === null || this.selectedFile.percent < 100 || this.targetStorage === null) return false
+        if (file === null || file.loaded < file.size || this.targetStorage === null) return false
         const storage = this.selectedDisk === this.storage ? this.targetStorage : this.storage
         return this.gapsInStorage(storage).some(f => f.size >= file.size)
       },

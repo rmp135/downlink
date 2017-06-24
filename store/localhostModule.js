@@ -13,7 +13,7 @@ export const state = {
         guid: 'guid2',
         position: 0,
         size: 1,
-        percent: 100, //TODO: Change this from percent to transferred.
+        loaded: 1,
         type: 'document',
         metadata: {
           contents: `This is some information. And some more.
@@ -26,7 +26,7 @@ export const state = {
         guid: 'guid',
         position: 2,
         size: 6,
-        percent: 20, //TODO: Change this from percent to transferred.
+        loaded: 6,
         type: 'document',
         metadata: {
           contents: `This is some information. And some more.

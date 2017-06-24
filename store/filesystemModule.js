@@ -24,7 +24,7 @@ export const actions = {
     dispatch('localhostModule/addProcess', { name: 'file-delete', locks: [file.guid], metadata: { file: file.guid }}, { root: true })
   },
   beginCopyFileProcess ({ state, commit, dispatch }, { fromFile, to: { storage, file } }) {
-    file.percent = 0
+    file.loaded = 0
     commit('CREATE_FILE', { storage, file })
     dispatch('localhostModule/addProcess', { name: 'file-copy', locks: [file.guid], metadata: { from: fromFile.guid, to: file.guid }}, { root: true })
   },

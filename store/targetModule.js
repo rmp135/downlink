@@ -8,7 +8,11 @@ export const state = {
           guid: '049e08d8-5c76-4fa1-a334-87fdff248a1k',
           size: 3,
           position: 2,
-          percent: 100
+          loaded: 2,
+          type: 'document',
+          metadata: {
+            content: 'some secret content here'
+          }
         }
       ]
     }
