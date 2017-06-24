@@ -10,10 +10,20 @@ export const state = {
         y: 200
       }
     },
+    // {
+    //   title: 'Activity Monitor',
+    //   program: 'activity-monitor',
+    //   index: 1,
+    //   locks: [],
+    //   position: {
+    //     x: 100,
+    //     y: 100
+    //   }
+    // },
     {
-      title: 'Activity Monitor',
-      program: 'activity-monitor',
-      index: 1,
+      title: 'Connector',
+      program: 'connector',
+      index: 2,
       locks: [],
       position: {
         x: 100,

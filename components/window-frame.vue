@@ -36,6 +36,7 @@
   import DiskManager from '~components/disk-manager'
   import ActivityMonitor from '~components/activity-monitor'
   import FilePreview from '~components/file-preview'
+  import Connector from '~components/connector'
 
   export default {
     props: {
@@ -95,7 +96,8 @@
     components: {
       DiskManager,
       ActivityMonitor,
-      FilePreview
+      FilePreview,
+      Connector
     }
   }
 </script>

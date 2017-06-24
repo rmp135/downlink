@@ -99,6 +99,14 @@
         selectedDisk: null
       }
     },
+    watch: {
+      targetStorage (targetStorage, oldTargetStorage) {
+        if (this.selectedDisk ===oldTargetStorage && targetStorage === null) {
+          this.selectedDisk = null
+          this.selectedFile = null
+        }
+      }
+    },
     computed: {
       ...mapState('localhostModule', ['storage']),
       ...mapState('targetModule', {
@@ -124,6 +132,7 @@
               if (file === undefined
                 || file.loaded === file.size
                 || fromFile.loaded < fromFile.size
+                || fromFile === undefined
                 || !this.allFiles.find(f => f.guid === process.metadata.from)) {
                 toRemove.push(process)
                 break
@@ -132,11 +141,13 @@
               break
             }
             case 'file-delete': {
-              const { file, storage } = this.fileDiskMap.find(f => f.file.guid === process.metadata.file)
-              if (file === undefined) {
+              const map = this.fileDiskMap.find(f => f.file.guid === process.metadata.file)
+              if (map === undefined) {
                 toRemove.push(process)
+                break
               }
-              else if (file.loaded <= 0) {
+              const { file, storage } = map
+              if (file.loaded <= 0) {
                 toRemove.push(process)
                 this.commitDeleteFile({ storage, file })
                 if (this.selectedFile == file) {
