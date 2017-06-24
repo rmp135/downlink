@@ -1,5 +1,6 @@
 export const state = {
-  target: {
+  target: null,
+  target2: {
     storage: {
       capacity: 20,
       files: [

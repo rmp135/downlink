@@ -1,9 +1,10 @@
 # Processes
 
+All processes have a `locks: String[]` that prevents files with that ID from being deleted.
+
 ## file-copy
 
 ```
-locks: String[],
 metadata: {
   from: String
   to: String
@@ -13,7 +14,6 @@ metadata: {
 ## file-delete
 
 ```
-locks: String[],
 metadata: {
   file: String
 }
@@ -22,17 +22,21 @@ metadata: {
 # Target
 
 ```
-disks: {
+storage: {
   size: Number,
-  name: String,
   files: {
     name: String
     size: Number,
-    position: Number
+    position: Number,
+    metadata: {
+      contents: String
+    }
   }
 }
 ```
 
 # Windows
 
-Windows are supplied with a windowData prop. This can be used to initialise a window with pre-populated data (such as a text file).
+All windows have a `locks: String[]` that prevents files with that ID from being deleted.
+
+Windows are supplied with a windowData prop. If the window uses the mixin `window-data-mixin`, this data can be used to initialise a window with pre-populated data (such as a text file).

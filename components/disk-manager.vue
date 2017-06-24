@@ -99,6 +99,14 @@
         selectedDisk: null
       }
     },
+    watch: {
+      targetStorage (targetStorage, oldTargetStorage) {
+        if (this.selectedDisk ===oldTargetStorage && targetStorage === null) {
+          this.selectedDisk = null
+          this.selectedFile = null
+        }
+      }
+    },
     computed: {
       ...mapState('localhostModule', ['storage']),
       ...mapState('targetModule', {
@@ -121,7 +129,11 @@
             case 'file-copy': {
               const file = this.allFiles.find(f => f.guid === process.metadata.to)
               const fromFile = this.allFiles.find(f => f.guid === process.metadata.from)
-              if (file === undefined  || file.percent === 100 || fromFile.percent < 100 || !this.allFiles.find(f => f.guid === process.metadata.from)) {
+              if (file === undefined
+                || fromFile === undefined
+                || file.percent === 100
+                || fromFile.percent < 100
+                || !this.allFiles.find(f => f.guid === process.metadata.from)) {
                 toRemove.push(process)
                 break
               }
@@ -129,11 +141,13 @@
               break
             }
             case 'file-delete': {
-              const { file, storage } = this.fileDiskMap.find(f => f.file.guid === process.metadata.file)
-              if (file === undefined) {
+              const map = this.fileDiskMap.find(f => f.file.guid === process.metadata.file)
+              if (map === undefined) {
                 toRemove.push(process)
+                break
               }
-              else if (file.percent <= 0) {
+              const { file, storage } = map
+              if (file.percent <= 0) {
                 toRemove.push(process)
                 this.commitDeleteFile({ storage, file })
                 if (this.selectedFile == file) {
