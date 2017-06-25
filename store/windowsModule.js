@@ -45,7 +45,6 @@ export const state = {
 
 export const actions = {
   forceAddWindow ({ commit }, window) {
-    debugger
     window = {
       title: 'Untitled Window',
       index: 0,
