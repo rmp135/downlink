@@ -59,7 +59,7 @@
 <template lang="pug">
   .disk-manager
     .commands
-      span.action(:class="{disabled:!canDeleteFile(selectedFile)}" @click="attemptDeleteFile(selectedFile, storage)") DEL
+      span.action(:class="{disabled:!canDeleteFile(selectedFile)}" @click="attemptDeleteFile(selectedFile)") DEL
       span |
       span.action(:class="{disabled:!canOpenFile(selectedFile)}" @click="attemptOpenFile(selectedFile)") OPEN
       span |
@@ -196,6 +196,7 @@
         return this.gapsInStorage(storage).some(f => f.size >= file.size)
       },
       async transferFile (file, storage) {
+        if (!this.canTransferFile(file)) return
         const gaps = this.gapsInStorage(storage)
         const newFile = cloneDeep(file)
         newFile.position = gaps.find(g => g.size >= file.size).position
@@ -217,7 +218,7 @@
         if (!this.canOpenFile(file)) return
         this.openFile(file)
       },
-      attemptDeleteFile (file, storage) {
+      attemptDeleteFile (file) {
         if (!this.canDeleteFile(file)) return
         this.beginDeleteProcess(file)
       },
