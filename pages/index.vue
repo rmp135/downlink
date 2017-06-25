@@ -35,7 +35,7 @@
       ...mapState('windowsModule', ['windows'])
     },
     mounted () {
-      // this.$store.dispatch('localhost/createFile')
+      this.Ticker.start()
     },
     methods: {
       onMouseMove (e) {

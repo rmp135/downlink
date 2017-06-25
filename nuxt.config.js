@@ -1,3 +1,7 @@
 module.exports = {
-  router: { base: '/downlink' }
+  router: { base: '/downlink' },
+  plugins: [
+    '~plugins/TickerPlugin'
+  ],
+  loading: false
 }

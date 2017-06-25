@@ -116,8 +116,11 @@
       ...mapGetters('localhostModule', ['processesWithPercent'])
     },
     mounted () {
-      setInterval(this.process, 100) //TODO: Remove this interval on component destruction. 
+      this.Ticker.add(this.process, 100) //TODO: Remove this interval on component destruction. 
       // this.$store.commit('target/SET_TARGET', null)
+    },
+    destroyed () {
+      this.Ticker.remove(this.process)
     },
     methods: {
       process () {
@@ -206,7 +209,7 @@
         this.selectedDisk = disk
       },
       canOpenFile (file) {
-        return file !== null && file.percent == 100
+        return file !== null && file.loaded == file.size
       },
       attemptOpenFile (file) {
         if (!this.canOpenFile(file)) return
