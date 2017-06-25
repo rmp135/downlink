@@ -29,7 +29,7 @@
       span.title {{window.title}}
       span.close(@click="onCloseClick") X
     .content(:class="{minimised: minimised}")
-      div(:is="window.program", :program-data="window.data")
+      div(:is="window.program", :program-data="window.data", @close="onCloseClick")
 </template>
 <script>
   import { mapState, mapMutations } from 'vuex'
@@ -37,6 +37,7 @@
   import ActivityMonitor from '~components/activity-monitor'
   import FilePreview from '~components/file-preview'
   import Connector from '~components/connector'
+  import LoginBox from '~components/login-box'
 
   export default {
     props: {
@@ -97,7 +98,8 @@
       DiskManager,
       ActivityMonitor,
       FilePreview,
-      Connector
+      Connector,
+      LoginBox
     }
   }
 </script>

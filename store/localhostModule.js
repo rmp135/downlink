@@ -9,20 +9,18 @@ export const state = {
     capacity: 30,
     files: [
       {
-        name: 'another file',
+        name: 'another file.txt',
         guid: 'guid2',
         position: 0,
         size: 1,
         loaded: 1,
         type: 'document',
         metadata: {
-          contents: `This is some information. And some more.
-          
-          More information`
+          contents: `This is where the secret information goes.`
         }
       },
       {
-        name: 'test file',
+        name: 'test file.txt',
         guid: 'guid',
         position: 2,
         size: 6,
@@ -38,12 +36,16 @@ export const state = {
   },
   programs: [
     {
-      name: "disk-manager",
-      type: "hardware"
+      name: 'disk-manager',
+      type: 'hardware'
     },
     {
-      name: "activity-monitor",
-      type: "utilities"
+      name: 'activity-monitor',
+      type: 'utilities'
+    },
+    {
+      name: 'connector',
+      type: 'utilities'
     }
   ]
 }

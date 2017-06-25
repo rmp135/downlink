@@ -11,15 +11,25 @@ export const state = {
       }
     },
     // {
-    //   title: 'Activity Monitor',
-    //   program: 'activity-monitor',
-    //   index: 1,
+    //   title: 'Login',
+    //   program: 'login-box',
+    //   index: 0,
     //   locks: [],
     //   position: {
-    //     x: 100,
-    //     y: 100
+    //     x: 200,
+    //     y: 200
     //   }
     // },
+    {
+      title: 'Activity Monitor',
+      program: 'activity-monitor',
+      index: 1,
+      locks: [],
+      position: {
+        x: 0,
+        y: 0
+      }
+    },
     {
       title: 'Connector',
       program: 'connector',
@@ -35,14 +45,15 @@ export const state = {
 
 export const actions = {
   forceAddWindow ({ commit }, window) {
+    debugger
     window = {
       title: 'Untitled Window',
       index: 0,
       data: { },
       locks: [],
       position: {
-        x: 0,
-        y: 0
+        x: innerWidth / 4,
+        y: innerHeight / 4
       },
       ...window
     }

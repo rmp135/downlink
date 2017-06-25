@@ -75,8 +75,10 @@
         .slots  
           .slot(v-for="i in storage.capacity")
       .target
-        .no-target-wrapper(v-if="targetStorage == null")
+        .no-target-wrapper(v-if="!isConnected")
           span Not connected to a remote host.
+        .no-target-wrapper(v-else-if="!isLoggedIn")
+          span Not logged in to remote host.
         .wrapper(v-else)
           .files
             .file(v-for="file in targetStorage.files", :style="{height:file.size+'rem', top:file.position+'rem'}", @click="selectFile(file, targetStorage)")
@@ -110,14 +112,14 @@
     computed: {
       ...mapState('localhostModule', ['storage']),
       ...mapState('targetModule', {
-        targetStorage: (state) => state.target !=  null ? state.target.storage : null
+        targetStorage: (state) => state.target !==  null ? state.target.storage : null
       }),
       ...mapGetters('filesystemModule', ['allFiles', 'fileDiskMap', 'lockedFiles']),
-      ...mapGetters('localhostModule', ['processesWithPercent'])
+      ...mapGetters('localhostModule', ['processesWithPercent']),
+      ...mapGetters('targetModule', ['isConnected', 'isLoggedIn'])
     },
     mounted () {
-      this.Ticker.add(this.process, 100) //TODO: Remove this interval on component destruction. 
-      // this.$store.commit('target/SET_TARGET', null)
+      this.Ticker.add(this.process, 100)
     },
     destroyed () {
       this.Ticker.remove(this.process)
@@ -134,8 +136,8 @@
               const fromFile = this.allFiles.find(f => f.guid === process.metadata.from)
               if (file === undefined
                 || file.loaded === file.size
-                || fromFile.loaded < fromFile.size
                 || fromFile === undefined
+                || fromFile.loaded < fromFile.size
                 || !this.allFiles.find(f => f.guid === process.metadata.from)) {
                 toRemove.push(process)
                 break
@@ -189,7 +191,7 @@
         return !this.lockedFiles.includes(file.guid)
       },
       canTransferFile (file) {
-        if (file === null || file.loaded < file.size || this.targetStorage === null) return false
+        if (file === null || file.loaded < file.size || !this.isLoggedIn) return false
         const storage = this.selectedDisk === this.storage ? this.targetStorage : this.storage
         return this.gapsInStorage(storage).some(f => f.size >= file.size)
       },
