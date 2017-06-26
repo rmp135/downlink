@@ -33,9 +33,7 @@ export const actions = {
       program: 'file-preview',
       title: file.name,
       locks: [file.guid],
-      data: {
-        contents: file.metadata.contents
-      }
+      data: file
     }
     dispatch('windowsModule/forceAddWindow', newWindow, { root: true })
   }  

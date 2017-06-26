@@ -24,11 +24,22 @@
 </style>
 <template lang="pug">
   .file-preview
-    .contents {{programData.contents}}
+    .contents {{contents}}
 </template>
 <script>
+import * as fileLoader from '~/helpers/fileLoader'
 import WindowDataMixin from './window-data-mixin'
 export default {
-  mixins: [WindowDataMixin]
+  mixins: [WindowDataMixin],
+  computed: {
+    contents () {
+      const fnName = this.programData.type.replace('-', '')
+      if (fileLoader.hasOwnProperty(fnName)) {
+        return fileLoader[fnName](this.programData.metadata)
+      } else {
+        return 'Unable to read file.'
+      }
+    }
+  }
 }
 </script>
