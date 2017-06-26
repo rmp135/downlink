@@ -67,13 +67,14 @@
   export default {
     data () {
       return {
-        IPInput:  '',
+        IPInput:  '33.112.3.112',
         isConnecting: false,
         lines: []
       }
     },
     computed: {
       ...mapState('targetModule', ['target', 'availableTargets']),
+      ...mapState('localhostModule', ['processes', 'storage']),
       ...mapGetters('targetModule', ['isConnected'])
     },
     methods: {
@@ -106,14 +107,14 @@
           this.isConnecting = false
           return
         }
-        if (false) {
+        const proxies = this.storage.files
+          .filter(f => f.type === 'botnet-definition')
+          .map(f => f.metadata.nodes.slice(f.metadata.burnedNodes, f.metadata.nodes.length))
+          .reduce(((f1, f2) => f1.concat(f2)), [])
+        if (this.processes.some(p => p.name === 'botnet') && proxies.length > 0) {
           newStatus.push(
             'Proxy network detected.',
-            'Routing through 223.2.2.11',
-            'Routing through 32.1.23.2',
-            'Routing through 99.11.2.112',
-            'Routing through 223.2.2.11',
-            'Routing through 223.2.2.14'
+            ...proxies.map(p => `Routing through ${p}.`)
           )
         } else {
           newStatus.push(
@@ -129,12 +130,20 @@
           title: 'Login',
           program: 'login-box'
         })
+
+        // setInterval(() => {
+        //   this.burnNode()
+        // }, 2000)
+        
       },
       onDisconnect() {
         if (this.isConnecting || !this.isConnected) return
         this.addLines(['Disconnected'])
         this.setTarget(null)
       },
+      ...mapMutations('localhostModule', {
+        burnNode: 'BURN_NODE'
+      }),
       ...mapMutations('targetModule', {
         setTarget: 'SET_TARGET'
       }),

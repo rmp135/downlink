@@ -12,14 +12,23 @@ export const state = {
       capacity: 20,
       files: [
         {
-          name: 'target file',
-          guid: '049e08d8-5c76-4fa1-a334-87fdff248a1k',
-          size: 3,
-          loaded: 3,
-          position: 2,
-          type: 'document',
+          name: 'botnet definition',
+          guid: 'guidd2',
+          position: 9,
+          size: 1,
+          loaded: 1,
+          type: 'botnet-definition',
           metadata: {
-            contents: 'some secret content here'
+            burnedNodes: 0,
+            nodes: [
+              '30.2.25.160',
+              '147.248.93.21',
+              '29.153.58.210',
+              '104.7.102.87',
+              '193.230.153.19',
+              '65.157.61.136',
+              '171.117.136.215'
+            ]
           }
         }
       ]

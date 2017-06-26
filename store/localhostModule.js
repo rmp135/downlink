@@ -31,7 +31,30 @@ export const state = {
           
           More information`
         }
-      }
+      },
+      // {
+      //   name: 'botnet definition',
+      //   guid: 'guidd',
+      //   position: 8,
+      //   size: 1,
+      //   loaded: 1,
+      //   type: 'botnet-definition',
+      //   metadata: {
+      //     burnedNodes: 2,
+      //     nodes: [
+      //       '30.2.25.160',
+      //       '147.248.93.21',
+      //       '153.206.229.159',
+      //       '117.175.64.62',
+      //       '33.232.248.206',
+      //       '5.231.75.41',
+      //       '251.107.30.217',
+      //       '215.125.176.20',
+      //       '168.155.56.5',
+      //       '249.51.215.143'
+      //     ]
+      //   }
+      // }
     ]
   },
   programs: [
@@ -45,6 +68,10 @@ export const state = {
     },
     {
       name: 'connector',
+      type: 'utilities'
+    },
+    {
+      name: 'bot-net',
       type: 'utilities'
     }
   ]
@@ -93,5 +120,12 @@ export const mutations = {
   },
   UPDATE_PROCESS_PRIORITY (state, { process, amount }) {
     process.priority = Math.max(process.priority + amount, 0)
+  },
+  BURN_NODE (state) {
+    const definitions = state.storage.files
+      .filter(f => f.type === 'botnet-definition' && f.size === f.loaded && f.metadata.burnedNodes < f.metadata.nodes.length)
+    if (definitions.length === 0) return
+    const picked = Math.floor(Math.random() * definitions.length)
+    definitions[picked].metadata.burnedNodes++
   }
 }

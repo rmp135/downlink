@@ -38,6 +38,7 @@
   import FilePreview from '~components/file-preview'
   import Connector from '~components/connector'
   import LoginBox from '~components/login-box'
+  import BotNet from '~components/botnet'
 
   export default {
     props: {
@@ -99,7 +100,8 @@
       ActivityMonitor,
       FilePreview,
       Connector,
-      LoginBox
+      LoginBox,
+      BotNet
     }
   }
 </script>

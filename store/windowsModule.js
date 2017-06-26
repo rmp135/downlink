@@ -39,6 +39,16 @@ export const state = {
         x: 100,
         y: 100
       }
+    },
+    {
+      title: 'Bot Net',
+      program: 'bot-net',
+      index: 2,
+      locks: ['guidd'],
+      position: {
+        x: 100,
+        y: 100
+      }
     }
   ]
 }
