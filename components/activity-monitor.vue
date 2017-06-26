@@ -28,10 +28,10 @@
         span.decrease(@click="decreasePriority(process.process)") -
         span.name {{process.process.name}}
         span.increase(@click="increasePriority(process.process)") +
-        span.kill(@click="killProcess(process.process)") KILL
+        span.kill(@click="removeProcess(process.process)") KILL
 </template>
 <script>
-  import { mapState, mapMutations, mapGetters } from 'vuex'
+  import { mapState, mapMutations, mapGetters, mapActions } from 'vuex'
 
   export default {
     data() {
@@ -66,9 +66,9 @@
       decreasePriority (process) {
         this.updateProcessPriority({ process, amount: -1 })
       },
+      ...mapActions('localhostModule', ['removeProcess']),
       ...mapMutations('localhostModule', {
         updateProcessPriority: 'UPDATE_PROCESS_PRIORITY',
-        killProcess: 'REMOVE_PROCESS'
       })
     }
   }

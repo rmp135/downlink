@@ -29,7 +29,7 @@
       span.title {{window.title}}
       span.close(@click="onCloseClick") X
     .content(:class="{minimised: minimised}")
-      div(:is="window.program", :program-data="window.data", @close="onCloseClick")
+      div(:is="window.program", :program-data="window.data", :window-data="window", @close="onCloseClick")
 </template>
 <script>
   import { mapState, mapMutations } from 'vuex'

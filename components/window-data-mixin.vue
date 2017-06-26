@@ -1,8 +1,11 @@
 <script>
   export default {
-    props: {
+    props:  {
       programData: {
-        required: false
+        required: true
+      },
+      windowData: {
+        required: true
       }
     }
   }

@@ -1,8 +1,11 @@
+import createGUID from '~/helpers/createGUID.js'
+
 export const state = {
   windows: [
     {
       title: 'Disk Manager',
       program: 'disk-manager',
+      guid: 'bfd89f5e-67a0-477e-84cb-2066cb5ba393',
       index: 0,
       locks: [],
       position: {
@@ -23,6 +26,7 @@ export const state = {
     {
       title: 'Activity Monitor',
       program: 'activity-monitor',
+      guid: 'c7db40e8-b0b3-4ebd-9186-f0b03964a0e2',
       index: 1,
       locks: [],
       position: {
@@ -33,6 +37,7 @@ export const state = {
     {
       title: 'Connector',
       program: 'connector',
+      guid: '9a86f98f-52a1-4334-9888-e04f14eeb515',
       index: 2,
       locks: [],
       position: {
@@ -43,6 +48,7 @@ export const state = {
     {
       title: 'Bot Net',
       program: 'bot-net',
+      guid: '9a86f98f-52a1-4334-9888-e04f14eeb516',
       index: 2,
       locks: ['guidd'],
       position: {
@@ -57,6 +63,7 @@ export const actions = {
   forceAddWindow ({ commit }, window) {
     window = {
       title: 'Untitled Window',
+      guid: createGUID(),
       index: 0,
       data: { },
       locks: [],

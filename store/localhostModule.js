@@ -104,6 +104,13 @@ export const actions = {
     process.id = getters.topProcID + 1
     commit('ADD_PROCESS', process)
     return process
+  },
+  removeProcess ({ state, commit, getters, rootState }, process) {
+    const window = rootState.windowsModule.windows.find(w => w.guid === process.window)
+    if (window !== undefined) {
+      commit('windowsModule/REMOVE_WINDOW', window, { root: true })
+    }
+    commit('REMOVE_PROCESS', process)
   }
 }
 
