@@ -39,6 +39,7 @@
   import Connector from '~components/connector'
   import LoginBox from '~components/login-box'
   import BotNet from '~components/botnet'
+  import Phone from '~components/Phone'
 
   export default {
     props: {
@@ -101,7 +102,8 @@
       FilePreview,
       Connector,
       LoginBox,
-      BotNet
+      BotNet,
+      Phone
     }
   }
 </script>
