@@ -43,9 +43,9 @@
       .body.no-message(v-if="selectedMessageIndex === null") No message selected.
       .body(v-else) {{selectedMessage.body}}
         .buttons
-          template(v-if="selectedMessage.type === 'job'")
+          template(v-if="selectedMessage.type === 'job' && !selectedMessage.completed")
             .button(v-if="!selectedMessage.accepted", @click="acceptJob(selectedMessage)") Accept
-            .button(v-else) Complete
+            .button(v-else, @click="attemptCompleteJob(selectedMessage)") Complete
           .button(v-else, @click="deleteMessage(selectedMessageIndex)") Delete
 </template>
 <script>
@@ -69,7 +69,7 @@
         this.selectedMessageIndex = null
         this.commitDeleteMessage(index)
       },
-      ...Vuex.mapActions('messagesModule', ['acceptJob']),
+      ...Vuex.mapActions('messagesModule', ['acceptJob', 'attemptCompleteJob']),
       ...Vuex.mapMutations('messagesModule', {
         commitDeleteMessage: 'DELETE_MESSAGE',
         updateMessage: 'UPDATE_MESSAGE'

@@ -12,7 +12,7 @@ export const state = {
       files: [
         {
           name: 'face-finder',
-          guid: 'guidd44',
+          guid: '​​​​​0e44f523-03e0-4e3d-be5a-1c25edba9d61​​​​​',
           position: 1,
           size: 1,
           loaded: 1,
@@ -20,18 +20,7 @@ export const state = {
           metadata: {
             type: 'social'
           }
-        },
-        {
-          name: 'phone',
-          guid: 'guidd44',
-          position: 9,
-          size: 3,
-          loaded: 3,
-          type: 'program',
-          metadata: {
-            type: 'social'
-          }
-        }        
+        }
       ]
     }
   }]
@@ -43,6 +32,9 @@ export const getters = {
   },
   isLoggedIn (state, getters) {
     return getters.isConnected && state.isLoggedIn
+  },
+  allUsers (state) {
+    return state.availableTargets.map(s => s.user).filter(u => u !== undefined)
   }
 }
 
