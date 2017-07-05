@@ -95,7 +95,7 @@ export const getters = {
     return state.processes.slice().sort((p1, p2) => p2.id - p1.id)[0].id
   }, 
   allPrograms (state, getters) {
-    return state.programs.concat(state.storage.files.filter(f => f.type === 'program').map(f => ({ name: f.name, type: f.metadata.type }) ))
+    return state.programs.concat(state.storage.files.filter(f => f.type === 'program' && f.loaded === f.size).map(f => ({ name: f.name, type: f.metadata.type }) ))
   }
 }
 
