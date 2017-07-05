@@ -20,7 +20,8 @@ export default {
   computed: {
     contents () {
       const fnName = this.programData.type.replace('-', '')
-      if (fileLoader.hasOwnProperty(fnName)) {
+      debugger
+      if (Object.prototype.hasOwnProperty.call(fileLoader, fnName)) {
         return fileLoader[fnName](this.programData.metadata)
       } else {
         return 'Unable to read file.'
