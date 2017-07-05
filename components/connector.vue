@@ -89,9 +89,9 @@
           program: 'login-box'
         })
 
-        setInterval(() => {
-          this.burnNode()
-        }, 2000)
+        // setInterval(() => {
+        //   this.burnNode()
+        // }, 2000)
         
       },
       onDisconnect() {
