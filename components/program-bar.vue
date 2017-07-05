@@ -57,10 +57,14 @@
         }
       },
       onClick (program) {
-        this.addWindow( {
+        const window = {
           program: program.name,
-          title: program.name
-        })
+          title: program.title
+        }
+        if (program.file) {
+          window.locks = [program.file]
+        }
+        this.addWindow(window)
       },
       ...Vuex.mapActions('windowsModule', ['addWindow'])
     }
