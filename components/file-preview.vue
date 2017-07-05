@@ -6,20 +6,6 @@
     width: 200px;
     height: 200px;
     overflow: auto;
-    &::-webkit-scrollbar-track
-    {
-      box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-    }
-
-    &::-webkit-scrollbar
-    {
-      width: 6px;
-    }
-
-    &::-webkit-scrollbar-thumb
-    {
-      background-color: green;
-    }
   }
 </style>
 <template lang="pug">

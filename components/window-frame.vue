@@ -39,7 +39,9 @@
   import Connector from '~components/connector'
   import LoginBox from '~components/login-box'
   import BotNet from '~components/botnet'
-  import Phone from '~components/Phone'
+  import Phone from '~components/phone'
+  import Messages from '~components/messages'
+  import FaceFinder from '~components/face-finder'
 
   export default {
     props: {
@@ -103,7 +105,9 @@
       Connector,
       LoginBox,
       BotNet,
-      Phone
+      Phone,
+      Messages,
+      FaceFinder
     }
   }
 </script>

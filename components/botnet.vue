@@ -20,20 +20,6 @@
     .nodes {
       height: 300px;
       overflow: auto;
-      &::-webkit-scrollbar-track
-      {
-        box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-      }
-
-      &::-webkit-scrollbar
-      {
-        width: 6px;
-      }
-
-      &::-webkit-scrollbar-thumb
-      {
-        background-color: green;
-      }
       .node {
         &.burned {
           text-decoration: line-through;
@@ -44,24 +30,20 @@
 </style>
 <template lang="pug">
   .botnet
-    div(v-if="definitions.length === 0")
-      div No botnets found.
+    div(v-if="allNodes.length === 0")
+      div No nodes available.
     template(v-else)
-      div.health
-        .label Health
-        .background(:style="{width:health+'%'}")
-      div ---
-      div Total nodes: {{allNodes.nodes.length}}
-      div Available nodes: {{allNodes.nodes.length - allNodes.burnedNodes}}
+      div Available nodes: {{allNodes.length}}
       div ---
       .nodes
-        div(v-for="definition in definitions")
-          div.node(v-for="(node, index) in definition.nodes", :class="{burned: index < definition.burnedNodes}") {{node}}
+        .node(v-for="node in allNodes") {{node}}
 </template>
 <script>
   import Vuex from 'vuex'
+  import WindowDataMixin from './window-data-mixin'
 
   export default {
+    mixins: [WindowDataMixin],
     data () {
       return {
         process: null
@@ -73,7 +55,8 @@
         const filesToLock = this.storage.files.filter(f => f.type === 'botnet-definition' && f.size === f.loaded).map(f => f.guid)
         this.process = {
           name: 'botnet',
-          locks: filesToLock
+          locks: filesToLock,
+          window: this.windowData.guid
         }
         this.addProcess(this.process)
       } else {
@@ -84,17 +67,11 @@
       this.removeProcess(this.process)
     },
     computed: {
-      definitions () {
+      allNodes () {
         return this.storage.files
           .filter(f => f.type === 'botnet-definition' && f.loaded === f.size)
-          .map(f => f.metadata)
-      },
-      allNodes () {
-        return this.definitions.reduce((f1, f2) => ({ burnedNodes: f1.burnedNodes + f2.burnedNodes, nodes: f1.nodes.concat(f2.nodes) }), { burnedNodes: 0, nodes: [] })
-      },
-      health () {
-        if (this.allNodes.nodes.length === 0) return 0
-        return Math.floor(100 - this.allNodes.burnedNodes / this.allNodes.nodes.length * 100)
+          .map(f => f.metadata.nodes)
+          .reduce(((f1, f2) => f1.concat(f2)), [])
       },
       ...Vuex.mapState('localhostModule', ['storage', 'processes'])
     },

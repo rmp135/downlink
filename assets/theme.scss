@@ -1,26 +1,26 @@
-body > * {
-  ::-webkit-scrollbar-track
-  {
+body {
+  ::-webkit-scrollbar-track {
     box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
   }
 
-  ::-webkit-scrollbar
-  {
+  ::-webkit-scrollbar {
     width: 6px;
   }
 
-  ::-webkit-scrollbar-thumb
-  {
+  ::-webkit-scrollbar-thumb {
     background-color: green;
   }
 }
 
 .button {
+  background: black;
+  border: 1px green solid;
+  color: green;
+  text-align: center;
   &:hover {
-    border: 1px black solid;
+    cursor: pointer;
     background: green;
     color: black;
-    cursor: pointer;
   }
   &.disabled, &.disabled:hover {
     background: black;
@@ -28,9 +28,6 @@ body > * {
     border-color: darken(green, 10);
     cursor: not-allowed;
   }
-  border: 1px green solid;
-  background: black;
-  color: green;
 }
 
 input {

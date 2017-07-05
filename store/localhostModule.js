@@ -1,6 +1,7 @@
 import Vue from 'vue'
 
 export const state = {
+  credits: 300,
   processes: [ ],
   // processes: [ { id: 1, name: 'test', priority: 1 }, { id:2, name: 'test-2', priority: 2 } ],
   storage:
@@ -40,7 +41,6 @@ export const state = {
         loaded: 1,
         type: 'botnet-definition',
         metadata: {
-          burnedNodes: 2,
           nodes: [
             '30.2.25.160',
             '147.248.93.21',
@@ -71,8 +71,8 @@ export const state = {
       type: 'utilities'
     },
     {
-      name: 'bot-net',
-      type: 'utilities'
+      name: 'messages',
+      type: 'communication'
     }
   ]
 }
@@ -130,9 +130,10 @@ export const mutations = {
   },
   BURN_NODE (state) {
     const definitions = state.storage.files
-      .filter(f => f.type === 'botnet-definition' && f.size === f.loaded && f.metadata.burnedNodes < f.metadata.nodes.length)
+      .filter(f => f.type === 'botnet-definition' && f.size === f.loaded && f.metadata.nodes.length > 0)
     if (definitions.length === 0) return
-    const picked = Math.floor(Math.random() * definitions.length)
-    definitions[picked].metadata.burnedNodes++
+    const pickedDefinition = Math.floor(Math.random() * definitions.length)
+    const pickedNode = Math.floor(Math.random() * definitions[pickedDefinition].metadata.nodes.length)
+    definitions[pickedDefinition].metadata.nodes.splice(pickedNode, 1)
   }
 }

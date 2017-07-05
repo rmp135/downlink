@@ -3,8 +3,8 @@ import createGUID from '~/helpers/createGUID.js'
 export const state = {
   windows: [
     {
-      title: 'Disk Manager',
-      program: 'disk-manager',
+      title: 'Messages',
+      program: 'messages',
       guid: 'bfd89f5e-67a0-477e-84cb-2066cb5ba393',
       index: 0,
       locks: [],
@@ -13,6 +13,17 @@ export const state = {
         y: 200
       }
     },
+    // {
+    //   title: 'Face Finder',
+    //   program: 'face-finder',
+    //   guid: 'bfd89f5e-67a0-477e-84cb-2066cb5ba393',
+    //   index: 0,
+    //   locks: [],
+    //   position: {
+    //     x: 200,
+    //     y: 200
+    //   }
+    // },
     // {
     //   title: 'Login',
     //   program: 'login-box',
@@ -23,39 +34,39 @@ export const state = {
     //     y: 200
     //   }
     // },
-    {
-      title: 'Activity Monitor',
-      program: 'activity-monitor',
-      guid: 'c7db40e8-b0b3-4ebd-9186-f0b03964a0e2',
-      index: 1,
-      locks: [],
-      position: {
-        x: 0,
-        y: 0
-      }
-    },
-    {
-      title: 'Connector',
-      program: 'connector',
-      guid: '9a86f98f-52a1-4334-9888-e04f14eeb515',
-      index: 2,
-      locks: [],
-      position: {
-        x: 100,
-        y: 100
-      }
-    },
-    {
-      title: 'Bot Net',
-      program: 'bot-net',
-      guid: '9a86f98f-52a1-4334-9888-e04f14eeb516',
-      index: 2,
-      locks: ['guidd'],
-      position: {
-        x: 100,
-        y: 100
-      }
-    }
+    // {
+    //   title: 'Activity Monitor',
+    //   program: 'activity-monitor',
+    //   guid: 'c7db40e8-b0b3-4ebd-9186-f0b03964a0e2',
+    //   index: 1,
+    //   locks: [],
+    //   position: {
+    //     x: 0,
+    //     y: 0
+    //   }
+    // },
+    // {
+    //   title: 'Connector',
+    //   program: 'connector',
+    //   guid: '9a86f98f-52a1-4334-9888-e04f14eeb515',
+    //   index: 2,
+    //   locks: [],
+    //   position: {
+    //     x: 100,
+    //     y: 100
+    //   }
+    // },
+    // {
+    //   title: 'Bot Net',
+    //   program: 'bot-net',
+    //   guid: '9a86f98f-52a1-4334-9888-e04f14eeb516',
+    //   index: 2,
+    //   locks: ['guidd'],
+    //   position: {
+    //     x: 100,
+    //     y: 100
+    //   }
+    // }
   ]
 }
 

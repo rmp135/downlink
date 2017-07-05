@@ -1,9 +1,8 @@
 export const state = {
   isLoggedIn: false,
   target: null,
-  availableTargets: [
-  {
-    address: '33.112.3.112',
+  availableTargets: [{
+    address: '332.112.3.112',
     credentials: {
       username: 'root',
       password: 'alpine'
@@ -12,29 +11,30 @@ export const state = {
       capacity: 20,
       files: [
         {
-          name: 'botnet definition',
-          guid: 'guidd2',
-          position: 9,
+          name: 'face-finder',
+          guid: 'guidd44',
+          position: 1,
           size: 1,
           loaded: 1,
-          type: 'botnet-definition',
+          type: 'program',
           metadata: {
-            burnedNodes: 0,
-            nodes: [
-              '30.2.25.160',
-              '147.248.93.21',
-              '29.153.58.210',
-              '104.7.102.87',
-              '193.230.153.19',
-              '65.157.61.136',
-              '171.117.136.215'
-            ]
+            type: 'social'
           }
-        }
+        },
+        {
+          name: 'phone',
+          guid: 'guidd44',
+          position: 9,
+          size: 3,
+          loaded: 3,
+          type: 'program',
+          metadata: {
+            type: 'social'
+          }
+        }        
       ]
     }
-  }
-  ]
+  }]
 }
 
 export const getters = {
@@ -53,5 +53,8 @@ export const mutations = {
   SET_TARGET (state, target) {
     state.isLoggedIn = false
     state.target = target
+  },
+  ADD_TARGET (state, target) {
+    state.availableTargets.push(target)
   }
 }

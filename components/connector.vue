@@ -1,50 +1,8 @@
 <style lang="scss">
   .connector {
-    ::-webkit-scrollbar-track
-    {
-      box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-    }
-
-    ::-webkit-scrollbar
-    {
-      width: 6px;
-    }
-
-    ::-webkit-scrollbar-thumb
-    {
-      background-color: green;
-    }
-
     .lines {
       height: 100px;
       overflow: auto;
-    }
-    input {
-      display: block;
-      background-color: black;
-      color: green;
-      outline: none;
-      border: 1px green solid;
-      &:disabled {
-        color: darken(green, 10);
-      }
-    }
-    .button {
-      &:hover {
-        border: 1px black solid;
-        background: green;
-        color: black;
-        cursor: pointer;
-      }
-      &.disabled, &.disabled:hover {
-        background: black;
-        color:  darken(green, 10);
-        border-color: darken(green, 10);
-        cursor: not-allowed;
-      }
-      border: 1px green solid;
-      background: black;
-      color: green;
     }
   }
 </style>
@@ -67,7 +25,7 @@
   export default {
     data () {
       return {
-        IPInput:  '33.112.3.112',
+        IPInput:  '',
         isConnecting: false,
         lines: []
       }
@@ -131,9 +89,9 @@
           program: 'login-box'
         })
 
-        // setInterval(() => {
-        //   this.burnNode()
-        // }, 2000)
+        setInterval(() => {
+          this.burnNode()
+        }, 2000)
         
       },
       onDisconnect() {
