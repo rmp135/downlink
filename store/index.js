@@ -1,7 +1,7 @@
 import * as store from 'store/dist/store.modern'
 
 export const state = {
-  isPaused: false,
+  isPaused: true,
   mousePosition: {
     x: 0,
     y: 0
@@ -9,11 +9,21 @@ export const state = {
 }
 
 export const actions = {
+  addSaveGame (vStore, save) {
+    const saves = store.get('saves') || []
+    saves.push(save)
+    store.set('saves', saves)
+  },
+  deleteSaveGame (vStore, saveIndex) {
+    const saves = store.get('saves')
+    saves.splice(saveIndex, 1)
+    store.set('saves', saves)
+  },
   storeState ({ state }) {
     store.set('state', state)
   },
-  restoreState ({ commit }) {
-    commit('SET_STATE', store.get('state'))
+  restoreState ({ commit }, state) {
+    commit('SET_STATE', state)
   }
 }
 
