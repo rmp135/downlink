@@ -61,7 +61,7 @@
       }
     },
     computed: {
-      ...mapState('globalModule', ['mousePosition'])
+      ...mapState(['mousePosition'])
     },
     mounted () {
       this.$watch('mousePosition', () => {

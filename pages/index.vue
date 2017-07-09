@@ -1,41 +1,45 @@
-<template lang="pug">
-  #app(@mousemove="onMouseMove")
-    window-frame(v-for="(window, index) in windows", :key="index", :window="window")
-    program-bar
-</template>
 <style lang="scss">
-  * {
-    padding: 0;
-    margin: 0;
-  }
-  html, body, #__nuxt, #app {
+  #app {
     height: 100%;
     user-select: none;
-  }
-  body {
-    background-color: black;
-    color: green;
-    font-family: monospace;
-  }
-  #app {
-    a:hover {
-      background-color: green;
-      color: black;
-      cursor: pointer;
+    .pause {
+      padding: 5px;
+      position: absolute;
+      &:hover {
+        cursor: pointer;
+      }
     }
   }
 </style>
+<template lang="pug">
+  #app(@mousemove="onMouseMove")
+    div(v-if="isLoading") Loading...
+    template(v-else)
+      pause-overlay(v-if="isPaused")
+      div.pause(@click="onPauseClick")
+        span.fa.fa-pause
+      window-frame(v-for="(window, index) in windows", :key="index", :window="window")
+      program-bar
+</template>
 <script>
   import { mapMutations, mapState, mapActions } from 'vuex'
   import ProgramBar from '~components/program-bar'
   import WindowFrame from '~components/window-frame'
+  import PauseOverlay from '~components/pause-overlay'
 
   export default {
+    data: () => ({
+      isLoading: true
+    }),
     computed: {
-      ...mapState('windowsModule', ['windows'])
+      ...mapState('windowsModule', ['windows']),
+      ...mapState(['isPaused'])
     },
     mounted () {
-      this.Ticker.start()
+      this.restoreState()
+      if (!this.isPaused)
+        this.Ticker.start()
+      this.isLoading = false
     },
     methods: {
       onMouseMove (e) {
@@ -43,14 +47,21 @@
           this.updateMouse(e)
         }
       },
-      ...mapMutations('globalModule', {
-        updateMouse: 'UPDATE_MOUSE'
+      onPauseClick () {
+        this.Ticker.stop()
+        this.setPaused(true)
       },
-      ...mapActions('localhostModule', ['createFile']))
+      ...mapMutations({
+        updateMouse: 'UPDATE_MOUSE',
+        setPaused: 'SET_PAUSED'
+      },
+      ...mapActions('localhostModule', ['createFile'])),
+      ...mapActions(['restoreState'])
     },
     components: {
       ProgramBar,
-      WindowFrame
+      WindowFrame,
+      PauseOverlay
     }
   }
 </script>
